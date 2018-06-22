@@ -1,4 +1,4 @@
-package repository
+package urlshorten
 
 import (
 	"context"
@@ -10,4 +10,5 @@ import (
 type URLShortenRepository interface {
 	Fetch(ctx context.Context, urlCode string) (*models.URLShorten, error)
 	Store(ctx context.Context, urlShorten *models.URLShorten) (string, error)
+	Close()
 }
