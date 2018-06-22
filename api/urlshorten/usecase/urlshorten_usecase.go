@@ -14,7 +14,7 @@ type urlshortenUsecase struct {
 	contextTimeout  time.Duration
 }
 
-func NewURLShortenUsecase(u urlshorten.URLShortenRepository, timeout time.Duration) urlshorten.URLShortenRepository {
+func NewURLShortenUsecase(u urlshorten.URLShortenRepository, timeout time.Duration) urlshorten.URLShortenUsecase {
 	return &urlshortenUsecase{
 		urlshortenRepos: u,
 		contextTimeout:  timeout,
