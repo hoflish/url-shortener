@@ -18,6 +18,7 @@ type mgoURLShortenRepository struct {
 	session *mgo.Session
 }
 
+// NewMgoURLShortenRepository creates new session
 func NewMgoURLShortenRepository(session *mgo.Session) urlshorten.URLShortenRepository {
 	return &mgoURLShortenRepository{session.Clone()}
 }
@@ -36,10 +37,16 @@ func (mg *mgoURLShortenRepository) Fetch(ctx context.Context, urlCode string) (*
 	return &res, nil
 }
 
+func (mg *mgoURLShortenRepository) Store(ctx context.Context, urlShorten *models.URLShorten) (string, error) {
+	panic("Not implemented")
+}
+
+// Close terminates the session
 func (mg *mgoURLShortenRepository) Close() {
 	mg.session.Close()
 }
 
+// collection - unexported method - returns mongodb collection
 func (mg *mgoURLShortenRepository) collection() *mgo.Collection {
 	return mg.session.DB(dbName).C(urlshortenCollection)
 }
