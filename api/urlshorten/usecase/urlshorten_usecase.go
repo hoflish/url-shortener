@@ -21,8 +21,17 @@ func NewURLShortenUsecase(u urlshorten.URLShortenRepository, timeout time.Durati
 	}
 }
 
-func (u *urlshortenUsecase) Fetch(ctx context.Context, urlCode string) (*models.URLShorten, error) {
-	panic("Not Implemented")
+func (u *urlshortenUsecase) Fetch(c context.Context, urlCode string) (*models.URLShorten, error) {
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+
+	shortUrl, err := u.urlshortenRepos.Fetch(ctx, urlCode)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return shortUrl, nil
 }
 
 func (u *urlshortenUsecase) Store(ctx context.Context, urlShorten *models.URLShorten) (string, error) {
