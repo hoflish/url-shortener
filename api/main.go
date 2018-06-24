@@ -26,7 +26,6 @@ func main() {
 	defer session.Close()
 
 	if err != nil {
-		// TODO: Use loggin API instead (e.g logrus)
 		log.Panicf("Could not connect to datastore with host %s - %v", host, err)
 	}
 

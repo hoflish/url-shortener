@@ -7,6 +7,7 @@ import (
 	models "github.com/hoflish/url-shortener/api/models"
 	"github.com/hoflish/url-shortener/api/url"
 	"github.com/labstack/echo"
+	"github.com/sirupsen/logrus"
 )
 
 type ResponseError struct {
@@ -40,7 +41,6 @@ func NewUrlHttpHandler(e *echo.Echo, u url.UrlUsecase) {
 	}
 	e.GET("/api/url/:code", handler.GetByCode)
 	//e.POST("/api/item", handler.Create
-
 }
 
 func getStatusCode(err error) int {
@@ -49,10 +49,9 @@ func getStatusCode(err error) int {
 		return http.StatusOK
 	}
 
-	//logrus.Error(err)
+	logrus.Error(err)
 	switch err {
 	case models.INTERNAL_SERVER_ERROR:
-
 		return http.StatusInternalServerError
 	case models.NOT_FOUND_ERROR:
 		return http.StatusNotFound

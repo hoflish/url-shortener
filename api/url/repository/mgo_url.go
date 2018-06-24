@@ -5,6 +5,7 @@ import (
 
 	"github.com/hoflish/url-shortener/api/models"
 	"github.com/hoflish/url-shortener/api/url"
+	"github.com/sirupsen/logrus"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -28,7 +29,10 @@ func (mg *mgoUrlRepository) Fetch(ctx context.Context, urlCode string) (*models.
 	res := models.Url{}
 	// TODO: move direct operations to database to internal functions
 	if err := mg.collection().Find(bson.M{"url_code": urlCode}).One(&res); err != nil {
-		// TODO: logging conn errors (See: https://github.com/sirupsen/logrus)
+		if err == mgo.ErrNotFound {
+			return nil, models.NOT_FOUND_ERROR
+		}
+		logrus.Error(err)
 		return nil, err
 	}
 	return &res, nil
