@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	models "github.com/hoflish/url-shortener/api/models"
-	"github.com/hoflish/url-shortener/api/urlshorten"
+	"github.com/hoflish/url-shortener/api/url"
 	"github.com/labstack/echo"
 )
 
@@ -13,11 +13,11 @@ type ResponseError struct {
 	Message string `json:"message"`
 }
 
-type HttpURLShortenHandler struct {
-	UrlShortenUC urlshorten.URLShortenUsecase
+type HttpUrlHandler struct {
+	UUsecase url.UrlUsecase
 }
 
-func (h *HttpURLShortenHandler) FetchURL(c echo.Context) error {
+func (h *HttpUrlHandler) GetByCode(c echo.Context) error {
 	code := c.Param("code")
 
 	ctx := c.Request().Context()
@@ -25,21 +25,21 @@ func (h *HttpURLShortenHandler) FetchURL(c echo.Context) error {
 		ctx = context.Background()
 	}
 
-	shortUrl, err := h.UrlShortenUC.Fetch(ctx, code)
+	item, err := h.UUsecase.Fetch(ctx, code)
 
 	if err != nil {
 		return c.JSON(getStatusCode(err), ResponseError{Message: err.Error()})
 	}
-	return c.JSON(http.StatusOK, shortUrl)
+	return c.JSON(http.StatusOK, item)
 }
 
-// NewURLShortenHttpHandler defines API endpoints
-func NewURLShortenHttpHandler(e *echo.Echo, u urlshorten.URLShortenUsecase) {
-	handler := &HttpURLShortenHandler{
-		UrlShortenUC: u,
+// NewUrlHttpHandler defines API endpoints
+func NewUrlHttpHandler(e *echo.Echo, u url.UrlUsecase) {
+	handler := &HttpUrlHandler{
+		UUsecase: u,
 	}
-	e.GET("/api/item/:code", handler.FetchURL)
-	//e.POST("/api/item", handler.Store)
+	e.GET("/api/url/:code", handler.GetByCode)
+	//e.POST("/api/item", handler.Create
 
 }
 

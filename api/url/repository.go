@@ -10,5 +10,4 @@ import (
 type UrlRepository interface {
 	Fetch(ctx context.Context, urlCode string) (*models.Url, error)
 	Store(ctx context.Context, url *models.Url) (*models.Url, error)
-	Close()
 }
