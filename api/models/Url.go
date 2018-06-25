@@ -1,13 +1,16 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"gopkg.in/mgo.v2/bson"
+)
 
 // Url Resource
 type Url struct {
-	ID        string    `json:"id"`
-	LongUrl   string    `json:"long_url"`
-	ShortUrl  string    `json:"short_url"`
-	UrlCode   string    `json:"url_code"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID        bson.ObjectId `json:"id" bson:"_id"`
+	LongUrl   string        `json:"long_url"`
+	UrlId     string        `json:"url_id"` // Short URL, e.g. "http://bit.ly/Cv7u".
+	CreatedAt time.Time     `json:"created_at"`
+	UpdatedAt time.Time     `json:"updated_at"`
 }

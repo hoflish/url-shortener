@@ -18,15 +18,16 @@ type HttpUrlHandler struct {
 	UUsecase url.UrlUsecase
 }
 
-func (h *HttpUrlHandler) GetByCode(c echo.Context) error {
-	code := c.Param("code")
+// Get method gets information for a specified short URL
+func (h *HttpUrlHandler) Get(c echo.Context) error {
+	urlId := c.QueryParam("shortUrl")
 
 	ctx := c.Request().Context()
 	if ctx == nil {
 		ctx = context.Background()
 	}
 
-	item, err := h.UUsecase.Fetch(ctx, code)
+	item, err := h.UUsecase.Fetch(ctx, urlId)
 
 	if err != nil {
 		return c.JSON(getStatusCode(err), ResponseError{Message: err.Error()})
@@ -39,7 +40,7 @@ func NewUrlHttpHandler(e *echo.Echo, u url.UrlUsecase) {
 	handler := &HttpUrlHandler{
 		UUsecase: u,
 	}
-	e.GET("/api/url/:code", handler.GetByCode)
+	e.GET("/api/url", handler.Get)
 	//e.POST("/api/item", handler.Create
 }
 
