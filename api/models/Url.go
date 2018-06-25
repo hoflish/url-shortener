@@ -8,7 +8,7 @@ import (
 
 // Url Resource
 type Url struct {
-	ID        bson.ObjectId `bson:"_id" json:"id"`
+	ID        bson.ObjectId `json:"id" bson:"_id"`
 	LongUrl   string        `json:"long_url"`
 	UrlId     string        `json:"url_id"` // Short URL, e.g. "http://bit.ly/Cv7u".
 	CreatedAt time.Time     `json:"created_at"`
