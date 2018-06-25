@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"os"
 	"time"
 
@@ -26,26 +25,26 @@ func main() {
 		host = defaultHost
 	}
 
-	session, err := urlRepos.CreateSession(host)
+	session, err := urlRepos.Init(host)
 	defer session.Close()
+
+	if err != nil {
+		logrus.Panicf("Init DB: %v", err)
+	}
 
 	// Feed db
 	data := models.Url{
 		ID:        bson.NewObjectId(),
 		LongUrl:   "https://www.facebook.com/",
-		ShortUrl:  "hof.li/C7aE",
-		UrlCode: "C7aE",
+		UrlId:     "hof.li/C7aE",
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
 
 	if err := session.DB("url-shortener").C("url").Insert(&data); err != nil {
-		logrus.Error(err)
+		logrus.Errorf("Feed DB: %v", err)
 	}
-
-	if err != nil {
-		log.Panicf("Could not connect to datastore with host %s - %v", host, err)
-	}
+	// end Feed db
 
 	e := echo.New()
 
