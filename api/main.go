@@ -5,10 +5,14 @@ import (
 	"os"
 	"time"
 
+	"gopkg.in/mgo.v2/bson"
+
+	"github.com/hoflish/url-shortener/api/models"
 	httpDeliver "github.com/hoflish/url-shortener/api/url/delivery/http"
 	urlRepos "github.com/hoflish/url-shortener/api/url/repository"
 	urlUsecase "github.com/hoflish/url-shortener/api/url/usecase"
 	"github.com/labstack/echo"
+	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -24,6 +28,20 @@ func main() {
 
 	session, err := urlRepos.CreateSession(host)
 	defer session.Close()
+
+	// Feed db
+	data := models.Url{
+		ID:        bson.NewObjectId(),
+		LongUrl:   "https://www.facebook.com/",
+		ShortUrl:  "hof.li/C7aE",
+		UrlCode: "C7aE",
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
+	if err := session.DB("url-shortener").C("url").Insert(&data); err != nil {
+		logrus.Error(err)
+	}
 
 	if err != nil {
 		log.Panicf("Could not connect to datastore with host %s - %v", host, err)

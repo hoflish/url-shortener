@@ -28,7 +28,7 @@ func NewMgoUrlRepository(session *mgo.Session) url.UrlRepository {
 func (mg *mgoUrlRepository) Fetch(ctx context.Context, urlCode string) (*models.Url, error) {
 	res := models.Url{}
 	// TODO: move direct operations to database to internal functions
-	if err := mg.collection().Find(bson.M{"url_code": urlCode}).One(&res); err != nil {
+	if err := mg.collection().Find(bson.M{"urlcode": urlCode}).One(&res); err != nil {
 		if err == mgo.ErrNotFound {
 			return nil, models.NOT_FOUND_ERROR
 		}
