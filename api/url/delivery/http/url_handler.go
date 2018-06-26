@@ -1,7 +1,6 @@
 package http
 
 import (
-	"context"
 	"net/http"
 
 	models "github.com/hoflish/url-shortener/api/models"
@@ -21,11 +20,29 @@ type HttpUrlHandler struct {
 // Get method gets information for a specified short URL
 func (h *HttpUrlHandler) Get(c echo.Context) error {
 	urlId := c.QueryParam("shortUrl")
+	/*
+		TODO: sanitize and validate shortUrl query param
+			1. [done] make sure the param is set (str != "")
+			2. [done] make sure the param is a url
+			3. [x] check if the url has a length equal to 'LENGTH',
+				(LENGTH should be defined later using host + generated id)
+			4. ...
+	*/
+	if urlId == "" {
+		return c.JSON(
+			http.StatusUnprocessableEntity,
+			ResponseError{Message: models.MISSING_QUERY_PARAM.Error()},
+		)
+	}
+
+	if !url.IsRequestURL(urlId) {
+		return c.JSON(
+			http.StatusBadRequest,
+			ResponseError{Message: models.INVALID_URL.Error()},
+		)
+	}
 
 	ctx := c.Request().Context()
-	if ctx == nil {
-		ctx = context.Background()
-	}
 
 	item, err := h.UUsecase.Fetch(ctx, urlId)
 
