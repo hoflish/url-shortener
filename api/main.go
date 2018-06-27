@@ -35,8 +35,8 @@ func main() {
 	// Feed db
 	data := models.Url{
 		ID:        bson.NewObjectId(),
-		LongUrl:   "https://www.facebook.com/",
-		UrlId:     "hof.li/C7aE",
+		LongUrl:   "http://www.facebook.com/",
+		UrlId:     "http://hof.li/C7aE",
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
