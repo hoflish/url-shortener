@@ -18,22 +18,26 @@ type HttpUrlHandler struct {
 }
 
 // Get method gets information for a specified short URL
+/*
+	TODO: sanitize and validate shortUrl query param
+		1. [done] make sure the param is set (str != "")
+		2. [done] make sure the param is a url
+		3. [x] check if the url has a length equal to 'LENGTH',
+			(LENGTH should be defined later using host + generated id)
+		4. ...
+*/
 func (h *HttpUrlHandler) Get(c echo.Context) error {
-	urlId := c.QueryParam("shortUrl")
-	/*
-		TODO: sanitize and validate shortUrl query param
-			1. [done] make sure the param is set (str != "")
-			2. [done] make sure the param is a url
-			3. [x] check if the url has a length equal to 'LENGTH',
-				(LENGTH should be defined later using host + generated id)
-			4. ...
-	*/
-	if urlId == "" {
+	qparam := "shortUrl"
+	query := c.QueryParams()
+	
+	if _, ok := query[qparam]; !ok {
 		return c.JSON(
 			http.StatusUnprocessableEntity,
 			ResponseError{Message: models.MISSING_QUERY_PARAM.Error()},
 		)
 	}
+
+	urlId := query.Get(qparam)
 
 	if !url.IsRequestURL(urlId) {
 		return c.JSON(
