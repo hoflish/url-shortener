@@ -7,9 +7,9 @@ import (
 	"gopkg.in/mgo.v2/bson"
 
 	"github.com/hoflish/url-shortener/api/models"
-	httpDeliver "github.com/hoflish/url-shortener/api/url/delivery/http"
-	urlRepos "github.com/hoflish/url-shortener/api/url/repository"
-	urlUsecase "github.com/hoflish/url-shortener/api/url/usecase"
+	httpDeliver "github.com/hoflish/url-shortener/api/urlshorten/delivery/http"
+	urlRepos "github.com/hoflish/url-shortener/api/urlshorten/repository"
+	urlUsecase "github.com/hoflish/url-shortener/api/urlshorten/usecase"
 	"github.com/labstack/echo"
 	"github.com/sirupsen/logrus"
 )
@@ -33,26 +33,26 @@ func main() {
 	}
 
 	// Feed db
-	data := models.Url{
+	data := models.URLShorten{
 		ID:        bson.NewObjectId(),
-		LongUrl:   "http://www.facebook.com/",
-		UrlId:     "http://hof.li/C7aE",
+		LongURL:   "http://www.facebook.com/",
+		ShortURL:  "http://hof.li/C7aE",
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
 
-	if err := session.DB("url-shortener").C("url").Insert(&data); err != nil {
+	if err := session.DB("url-shortener").C("urlshorten").Insert(&data); err != nil {
 		logrus.Errorf("Feed DB: %v", err)
 	}
 	// end Feed db
 
 	e := echo.New()
 
-	ur := urlRepos.NewMgoUrlRepository(session)
+	ur := urlRepos.NewMgoURLShortenRepos(session)
 	timeoutContext := time.Duration(2) * time.Second
 
-	uu := urlUsecase.NewUrlUsecase(ur, timeoutContext)
-	httpDeliver.NewUrlHttpHandler(e, uu)
+	uu := urlUsecase.NewURLShortenUsecase(ur, timeoutContext)
+	httpDeliver.NewHTTPURLShortenHandler(e, uu)
 
 	e.Start(":8080")
 }

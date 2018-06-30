@@ -3,8 +3,9 @@ package http
 import (
 	"net/http"
 
+	"github.com/hoflish/url-shortener/api/urlshorten"
+
 	models "github.com/hoflish/url-shortener/api/models"
-	"github.com/hoflish/url-shortener/api/url"
 	"github.com/labstack/echo"
 	"github.com/sirupsen/logrus"
 )
@@ -13,8 +14,8 @@ type ResponseError struct {
 	Message string `json:"message"`
 }
 
-type HttpUrlHandler struct {
-	UUsecase url.UrlUsecase
+type HTTPURLShortenHandler struct {
+	USUsecase urlshorten.URLShortenUsecase
 }
 
 // Get method gets information for a specified short URL
@@ -26,29 +27,29 @@ type HttpUrlHandler struct {
 			(LENGTH should be defined later using host + generated id)
 		4. ...
 */
-func (h *HttpUrlHandler) Get(c echo.Context) error {
+func (h *HTTPURLShortenHandler) Get(c echo.Context) error {
 	qparam := "shortUrl"
 	query := c.QueryParams()
-	
+
 	if _, ok := query[qparam]; !ok {
 		return c.JSON(
 			http.StatusUnprocessableEntity,
-			ResponseError{Message: models.MISSING_QUERY_PARAM.Error()},
+			ResponseError{Message: models.ErrorMissingQueryParam.Error()},
 		)
 	}
 
-	urlId := query.Get(qparam)
+	urlShort := query.Get(qparam)
 
-	if !url.IsRequestURL(urlId) {
+	if !urlshorten.IsRequestURL(urlShort) {
 		return c.JSON(
 			http.StatusBadRequest,
-			ResponseError{Message: models.INVALID_URL.Error()},
+			ResponseError{Message: models.ErrorInvalidURL.Error()},
 		)
 	}
 
 	ctx := c.Request().Context()
 
-	item, err := h.UUsecase.Fetch(ctx, urlId)
+	item, err := h.USUsecase.Fetch(ctx, urlShort)
 
 	if err != nil {
 		return c.JSON(getStatusCode(err), ResponseError{Message: err.Error()})
@@ -56,10 +57,10 @@ func (h *HttpUrlHandler) Get(c echo.Context) error {
 	return c.JSON(http.StatusOK, item)
 }
 
-// NewUrlHttpHandler defines API endpoints
-func NewUrlHttpHandler(e *echo.Echo, u url.UrlUsecase) {
-	handler := &HttpUrlHandler{
-		UUsecase: u,
+// NewHttpURLShortenHandler defines API endpoints
+func NewHTTPURLShortenHandler(e *echo.Echo, u urlshorten.URLShortenUsecase) {
+	handler := &HTTPURLShortenHandler{
+		USUsecase: u,
 	}
 	e.GET("/api/url", handler.Get)
 	//e.POST("/api/item", handler.Create
@@ -70,12 +71,13 @@ func getStatusCode(err error) int {
 	if err == nil {
 		return http.StatusOK
 	}
-
+	// REVIEW: Refactor this code
 	logrus.Error(err)
+
 	switch err {
-	case models.INTERNAL_SERVER_ERROR:
+	case models.ErrorInternalServer:
 		return http.StatusInternalServerError
-	case models.NOT_FOUND_ERROR:
+	case models.ErrorNotFound:
 		return http.StatusNotFound
 	default:
 		return http.StatusInternalServerError

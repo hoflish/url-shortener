@@ -27,11 +27,11 @@ func Init(host string) (*mgo.Session, error) {
 	}
 
 	// Collection Url
-	c := session.DB("url-shortener").C("url")
+	c := session.DB("url-shortener").C("urlshorten")
 
 	// Index
 	index := mgo.Index{
-		Key:        []string{"urlid"},
+		Key:        []string{"urlshorten"},
 		Unique:     true,
 		DropDups:   true,
 		Background: true,

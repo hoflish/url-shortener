@@ -1,4 +1,4 @@
-package url
+package urlshorten
 
 import (
 	"net/url"
