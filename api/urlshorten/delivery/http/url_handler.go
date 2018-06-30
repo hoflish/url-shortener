@@ -57,13 +57,39 @@ func (h *HTTPURLShortenHandler) Get(c echo.Context) error {
 	return c.JSON(http.StatusOK, item)
 }
 
+// Insert creates new Short URL
+func (h *HTTPURLShortenHandler) Insert(c echo.Context) error {
+	var urlShorten models.URLShorten
+	err := c.Bind(&urlShorten)
+	if err != nil {
+		return c.JSON(http.StatusUnprocessableEntity, err.Error())
+	}
+
+	if !urlshorten.IsRequestURL(urlShorten.LongURL) {
+		return c.JSON(
+			http.StatusBadRequest,
+			ResponseError{Message: models.ErrorInvalidURL.Error()},
+		)
+	}
+
+	ctx := c.Request().Context()
+	res, err := h.USUsecase.Store(ctx, &urlShorten)
+
+	if err != nil {
+		return c.JSON(getStatusCode(err), ResponseError{Message: err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, res)
+
+}
+
 // NewHttpURLShortenHandler defines API endpoints
 func NewHTTPURLShortenHandler(e *echo.Echo, u urlshorten.URLShortenUsecase) {
 	handler := &HTTPURLShortenHandler{
 		USUsecase: u,
 	}
 	e.GET("/api/url", handler.Get)
-	//e.POST("/api/item", handler.Create
+	e.POST("/api/url", handler.Insert)
 }
 
 func getStatusCode(err error) int {

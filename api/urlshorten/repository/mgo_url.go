@@ -39,9 +39,16 @@ func (mg *mgoURLShortenRepos) Fetch(ctx context.Context, shortUrl string) (*mode
 }
 
 // Store method stores a new Url Resource
-/*func (mg *mgoUrlRepository) Store(ctx context.Context, url *models.Url) (*models.Url, error) {
-	panic("Not implemented yet!")
-}*/
+func (mg *mgoURLShortenRepos) Store(ctx context.Context, us *models.URLShorten) (*models.URLShorten, error) {
+	us.ID = bson.NewObjectId()
+
+	logrus.Debug("Created At: ", us.CreatedAt)
+	if err := mg.collection().Insert(us); err != nil {
+		logrus.Error(err)
+		return nil, err
+	}
+	return us, nil
+}
 
 // collection - unexported method - returns mongodb collection
 func (mg *mgoURLShortenRepos) collection() *mgo.Collection {
