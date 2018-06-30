@@ -6,8 +6,8 @@ import (
 	"github.com/hoflish/url-shortener/api/models"
 )
 
-// UrlUsecase defines methods which must be implemented by usecase handler
-type UrlUsecase interface {
-	Fetch(ctx context.Context, urlCode string) (*models.Url, error)
-	Store(ctx context.Context, url *models.Url) (*models.Url, error)
+// URLShortenUsecase defines methods which must be implemented by usecase handler
+type URLShortenUsecase interface {
+	Fetch(ctx context.Context, shortURL string) (*models.URLShorten, error)
+	//Store(ctx context.Context, urlShorten *models.URLShorten) (string, error)
 }

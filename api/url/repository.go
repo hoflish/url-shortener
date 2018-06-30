@@ -6,8 +6,8 @@ import (
 	"github.com/hoflish/url-shortener/api/models"
 )
 
-// UrlRepository defines methods which must be implemented by DB Driver
-type UrlRepository interface {
-	Fetch(ctx context.Context, urlCode string) (*models.Url, error)
-	Store(ctx context.Context, url *models.Url) (*models.Url, error)
+// URLShortenRepos defines methods which must be implemented by DB Driver
+type URLShortenRepos interface {
+	Fetch(ctx context.Context, shortURL string) (*models.URLShorten, error)
+	//Store(ctx context.Context, url *models.URLShorten) (string, error)
 }
