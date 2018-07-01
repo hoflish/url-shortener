@@ -1,0 +1,17 @@
+version: "3.4"
+
+services:
+
+  urlshortener-service:
+    build: ./api
+    environment:
+      DB_HOST: "192.168.99.100:27017"
+    depends_on: 
+      - datastore
+    ports:
+      - "8080:8080"
+
+  datastore:
+    image: mongo
+    ports:
+      - 27017:27017

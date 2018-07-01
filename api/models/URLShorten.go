@@ -1,14 +1,16 @@
 package models
 
-import "time"
+import (
+	"time"
 
-// URLShorten model
-// DB collection = urlshorten
+	"gopkg.in/mgo.v2/bson"
+)
+
+// URLShorten Resource
 type URLShorten struct {
-	ID          string    `json:"id"`
-	OriginalURL string    `json:"original_url"`
-	ShortURL    string    `json:"short_url"`
-	URLCode     string    `json:"url_code"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	ID        bson.ObjectId `json:"id" bson:"_id"`
+	LongURL   string        `json:"long_url" form:"longUrl"` // Long URL, e.g. "https://stackoverflow.com/"
+	ShortURL  string        `json:"short_url"`               // Short URL, e.g. "http://bit.ly/Cv7u"
+	CreatedAt time.Time     `json:"created_at"`
+	UpdatedAt time.Time     `json:"updated_at"`
 }
