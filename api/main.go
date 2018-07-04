@@ -4,9 +4,6 @@ import (
 	"os"
 	"time"
 
-	"gopkg.in/mgo.v2/bson"
-
-	"github.com/hoflish/url-shortener/api/models"
 	httpDeliver "github.com/hoflish/url-shortener/api/urlshorten/delivery/http"
 	urlRepos "github.com/hoflish/url-shortener/api/urlshorten/repository"
 	urlUsecase "github.com/hoflish/url-shortener/api/urlshorten/usecase"
@@ -31,20 +28,6 @@ func main() {
 	if err != nil {
 		logrus.Panicf("Init DB: %v", err)
 	}
-
-	// Feed db
-	data := models.URLShorten{
-		ID:        bson.NewObjectId(),
-		LongURL:   "http://www.facebook.com/",
-		ShortURL:  "http://hof.li/C7aE",
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-	}
-
-	if err := session.DB("url-shortener").C("urlshorten").Insert(&data); err != nil {
-		logrus.Errorf("Feed DB: %v", err)
-	}
-	// end Feed db
 
 	e := echo.New()
 
