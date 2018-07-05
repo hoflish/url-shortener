@@ -25,13 +25,11 @@ func main() {
 	if err != nil {
 		logrus.Panicf("Init DB: %v", err)
 	}
-
 	defer conn.Close()
 
 	timeoutContext := time.Duration(2) * time.Second
 
 	e := echo.New()
-
 	uu := usecase.NewURLShortenUsecase(conn, timeoutContext)
 	httpDeliver.NewHTTPURLShortenHandler(e, uu)
 
