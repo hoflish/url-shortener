@@ -6,8 +6,8 @@ import (
 	"github.com/hoflish/url-shortener/api/models"
 )
 
-// URLShortenRepos provides thread-safe access to a database of urlshortens.
-type URLShortenRepos interface {
+// DataAccessLayer provides thread-safe access to a database of urlshortens.
+type DataAccessLayer interface {
 	// Fetch retrieves a urlshorten metadata by its ShortURL.
 	Fetch(ctx context.Context, shortURL string) (*models.URLShorten, error)
 

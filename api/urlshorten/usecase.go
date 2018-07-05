@@ -6,7 +6,7 @@ import (
 	"github.com/hoflish/url-shortener/api/models"
 )
 
-// URLShortenUsecase defines methods which handle business logic
+// URLShortenUsecase defines methods which handle business process
 type URLShortenUsecase interface {
 	// Fetch returns a urlshorten resource by its ShortURL.
 	Fetch(ctx context.Context, shortURL string) (*models.URLShorten, error)

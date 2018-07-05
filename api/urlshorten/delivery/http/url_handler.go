@@ -10,6 +10,8 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// TODO: Refactor this code
+
 type ResponseError struct {
 	Message string `json:"message"`
 }
@@ -19,15 +21,15 @@ type HTTPURLShortenHandler struct {
 }
 
 // Get method gets information for a specified short URL
-/*
-	TODO: sanitize and validate shortUrl query param
-		1. [done] make sure the param is set (str != "")
-		2. [done] make sure the param is a url
-		3. [x] check if the url has a length equal to 'LENGTH',
-			(LENGTH should be defined later using host + generated id)
-		4. ...
-*/
 func (h *HTTPURLShortenHandler) Get(c echo.Context) error {
+	/*
+		TODO: sanitize and validate shortUrl query param
+			1. [done] make sure the param is set (str != "")
+			2. [done] make sure the param is a url
+			3. [x] check if the url has a length equal to 'LENGTH',
+				(LENGTH should be defined later using host + generated id)
+			4. ...
+	*/
 	qparam := "shortUrl"
 	query := c.QueryParams()
 
