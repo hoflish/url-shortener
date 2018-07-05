@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/hoflish/url-shortener/api/models"
-	"github.com/hoflish/url-shortener/api/urlshorten"
+	dal "github.com/hoflish/url-shortener/api/urlshorten"
 	"github.com/teris-io/shortid"
 )
 
@@ -13,36 +13,35 @@ import (
 const shortBaseURL = "http://192.168.99.100:8080/"
 
 type URLShortenUsecase struct {
-	urlShortenRepos urlshorten.URLShortenRepos
-	contextTimeout  time.Duration
+	DB             dal.DataAccessLayer
+	contextTimeout time.Duration
 }
 
-func NewURLShortenUsecase(us urlshorten.URLShortenRepos, timeout time.Duration) urlshorten.URLShortenRepos {
+func NewURLShortenUsecase(db dal.DataAccessLayer, timeout time.Duration) dal.DataAccessLayer {
 	return &URLShortenUsecase{
-		urlShortenRepos: us,
-		contextTimeout:  timeout,
+		DB:             db,
+		contextTimeout: timeout,
 	}
 }
 
-// Fetch implements business loginc of ShortURL fetching
-func (usu *URLShortenUsecase) Fetch(c context.Context, shortURL string) (*models.URLShorten, error) {
-	ctx, cancel := context.WithTimeout(c, usu.contextTimeout)
+// Fetch serves data from DB layer to delivery one
+func (uc *URLShortenUsecase) Fetch(c context.Context, shortURL string) (*models.URLShorten, error) {
+	ctx, cancel := context.WithTimeout(c, uc.contextTimeout)
 	defer cancel()
 
-	item, err := usu.urlShortenRepos.Fetch(ctx, shortURL)
-
+	item, err := uc.DB.Fetch(ctx, shortURL)
 	if err != nil {
 		return nil, err
 	}
+	defer uc.DB.Close()
 
 	return item, nil
 }
 
-func (usu *URLShortenUsecase) Store(c context.Context, us *models.URLShorten) (*models.URLShorten, error) {
-	ctx, cancel := context.WithTimeout(c, usu.contextTimeout)
+// Store saves sanitized/validated inputs into DB
+func (uc *URLShortenUsecase) Store(c context.Context, urlsh *models.URLShorten) (*models.URLShorten, error) {
+	ctx, cancel := context.WithTimeout(c, uc.contextTimeout)
 	defer cancel()
-
-	//sid, err := shortid.New(1, shortid.DefaultABC, 2342)
 
 	// TODO: refactor this code to be more safe
 	shortID, err := shortid.Generate()
@@ -50,16 +49,18 @@ func (usu *URLShortenUsecase) Store(c context.Context, us *models.URLShorten) (*
 		return nil, err
 	}
 
-	us.CreatedAt = time.Now()
-	us.UpdatedAt = time.Now()
-	us.ShortURL = shortBaseURL + shortID
+	urlsh.CreatedAt = time.Now()
+	urlsh.UpdatedAt = time.Now()
+	urlsh.ShortURL = shortBaseURL + shortID
 
-	res, err := usu.urlShortenRepos.Store(ctx, us)
-
+	res, err := uc.DB.Store(ctx, urlsh)
 	if err != nil {
 		return nil, err
 	}
+	defer uc.DB.Close()
+
 	return res, nil
 }
 
-func (usu *URLShortenUsecase) Close() {}
+// Close closes DB session
+func (uc *URLShortenUsecase) Close() {}
