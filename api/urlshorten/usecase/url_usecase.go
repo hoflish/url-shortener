@@ -61,3 +61,5 @@ func (usu *URLShortenUsecase) Store(c context.Context, us *models.URLShorten) (*
 	}
 	return res, nil
 }
+
+func (usu *URLShortenUsecase) Close() {}
