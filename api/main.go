@@ -5,8 +5,8 @@ import (
 	"time"
 
 	httpDeliver "github.com/hoflish/url-shortener/api/urlshorten/delivery/http"
-	urlRepos "github.com/hoflish/url-shortener/api/urlshorten/repository"
-	urlUsecase "github.com/hoflish/url-shortener/api/urlshorten/usecase"
+	repos "github.com/hoflish/url-shortener/api/urlshorten/repository"
+	usecase "github.com/hoflish/url-shortener/api/urlshorten/usecase"
 	"github.com/labstack/echo"
 	"github.com/sirupsen/logrus"
 )
@@ -22,7 +22,7 @@ func main() {
 		host = defaultHost
 	}
 
-	session, err := urlRepos.Init(host)
+	session, err := repos.Init(host)
 	defer session.Close()
 
 	if err != nil {
@@ -31,10 +31,10 @@ func main() {
 
 	e := echo.New()
 
-	ur := urlRepos.NewMgoURLShortenRepos(session)
+	ur := repos.NewMongoDB(session)
 	timeoutContext := time.Duration(2) * time.Second
 
-	uu := urlUsecase.NewURLShortenUsecase(ur, timeoutContext)
+	uu := usecase.NewURLShortenUsecase(ur, timeoutContext)
 	httpDeliver.NewHTTPURLShortenHandler(e, uu)
 
 	e.Start(":8080")

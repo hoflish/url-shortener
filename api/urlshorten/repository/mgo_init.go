@@ -18,7 +18,7 @@ func Init(host string) (*mgo.Session, error) {
 
 	// Index
 	index := mgo.Index{
-		Key:        []string{"urlshorten"},
+		Key:        []string{"shorturl"},
 		Unique:     true,
 		DropDups:   true,
 		Background: true,
