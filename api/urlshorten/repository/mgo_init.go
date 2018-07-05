@@ -4,10 +4,6 @@ import (
 	"gopkg.in/mgo.v2"
 )
 
-var (
-	IsDrop = true
-)
-
 // Init creates the main session to our mongodb instance
 func Init(host string) (*mgo.Session, error) {
 	session, err := mgo.Dial(host)
@@ -17,21 +13,12 @@ func Init(host string) (*mgo.Session, error) {
 
 	session.SetMode(mgo.Monotonic, true)
 
-	// Drop Database
-	if IsDrop {
-		// TODO: single source of truth
-		err = session.DB("url-shortener").DropDatabase()
-		if err != nil {
-			return nil, err
-		}
-	}
-
 	// Collection Url
 	c := session.DB("url-shortener").C("urlshorten")
 
 	// Index
 	index := mgo.Index{
-		Key:        []string{"urlshorten"},
+		Key:        []string{"shorturl"},
 		Unique:     true,
 		DropDups:   true,
 		Background: true,

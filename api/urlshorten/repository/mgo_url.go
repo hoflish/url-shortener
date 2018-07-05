@@ -11,24 +11,29 @@ import (
 )
 
 const (
-	dbName        = "url-shortener"
-	urlCollection = "urlshorten"
+	dbName               = "url-shortener"
+	urlShortenCollection = "urlshorten"
 )
 
-type mgoURLShortenRepos struct {
+type mongoDB struct {
 	session *mgo.Session
 }
 
-// NewMgoURLShortenRepos creates new session
-func NewMgoURLShortenRepos(session *mgo.Session) urlshorten.URLShortenRepos {
-	return &mgoURLShortenRepos{session.Clone()}
+// NewMongoDB creates new session
+func NewMongoDB(session *mgo.Session) urlshorten.URLShortenRepos {
+	return &mongoDB{session.Clone()}
+}
+
+// Close closes database connection
+func (db *mongoDB) Close() {
+	db.session.Close()
 }
 
 // Fetch method gets a specified Url Resource
-func (mg *mgoURLShortenRepos) Fetch(ctx context.Context, shortUrl string) (*models.URLShorten, error) {
+func (db *mongoDB) Fetch(ctx context.Context, shortURL string) (*models.URLShorten, error) {
 	result := models.URLShorten{}
-	// REVIEW: move direct operations to database to internal functions
-	if err := mg.collection().Find(bson.M{"shorturl": shortUrl}).One(&result); err != nil {
+
+	if err := db.collection().Find(bson.M{"shorturl": shortURL}).One(&result); err != nil {
 		if err == mgo.ErrNotFound {
 			return nil, models.ErrorNotFound
 		}
@@ -39,11 +44,11 @@ func (mg *mgoURLShortenRepos) Fetch(ctx context.Context, shortUrl string) (*mode
 }
 
 // Store method stores a new Url Resource
-func (mg *mgoURLShortenRepos) Store(ctx context.Context, us *models.URLShorten) (*models.URLShorten, error) {
+func (db *mongoDB) Store(ctx context.Context, us *models.URLShorten) (*models.URLShorten, error) {
 	us.ID = bson.NewObjectId()
 
 	logrus.Debug("Created At: ", us.CreatedAt)
-	if err := mg.collection().Insert(us); err != nil {
+	if err := db.collection().Insert(us); err != nil {
 		logrus.Error(err)
 		return nil, err
 	}
@@ -51,6 +56,6 @@ func (mg *mgoURLShortenRepos) Store(ctx context.Context, us *models.URLShorten) 
 }
 
 // collection - unexported method - returns mongodb collection
-func (mg *mgoURLShortenRepos) collection() *mgo.Collection {
-	return mg.session.DB(dbName).C(urlCollection)
+func (db *mongoDB) collection() *mgo.Collection {
+	return db.session.DB(dbName).C(urlShortenCollection)
 }
