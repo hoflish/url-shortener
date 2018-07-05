@@ -4,8 +4,8 @@ import (
 	"os"
 	"time"
 
+	db "github.com/hoflish/url-shortener/api/urlshorten/db"
 	httpDeliver "github.com/hoflish/url-shortener/api/urlshorten/delivery/http"
-	repos "github.com/hoflish/url-shortener/api/urlshorten/repository"
 	usecase "github.com/hoflish/url-shortener/api/urlshorten/usecase"
 	"github.com/labstack/echo"
 	"github.com/sirupsen/logrus"
@@ -17,24 +17,20 @@ const (
 
 func main() {
 	host := os.Getenv("DB_HOST")
-
 	if host == "" {
 		host = defaultHost
 	}
 
-	session, err := repos.Init(host)
-	defer session.Close()
-
+	conn, err := db.NewMongoDB(host)
 	if err != nil {
 		logrus.Panicf("Init DB: %v", err)
 	}
+	defer conn.Close()
 
-	e := echo.New()
-
-	ur := repos.NewMongoDB(session)
 	timeoutContext := time.Duration(2) * time.Second
 
-	uu := usecase.NewURLShortenUsecase(ur, timeoutContext)
+	e := echo.New()
+	uu := usecase.NewURLShortenUsecase(conn, timeoutContext)
 	httpDeliver.NewHTTPURLShortenHandler(e, uu)
 
 	e.Start(":8080")
