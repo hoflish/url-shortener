@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"gopkg.in/mgo.v2/bson"
+
 	"github.com/hoflish/url-shortener/api/models"
 	dal "github.com/hoflish/url-shortener/api/urlshorten"
 	"github.com/teris-io/shortid"
@@ -49,6 +51,7 @@ func (uc *URLShortenUsecase) Store(c context.Context, urlsh *models.URLShorten) 
 		return nil, err
 	}
 
+	urlsh.ID = bson.NewObjectId()
 	urlsh.CreatedAt = time.Now()
 	urlsh.UpdatedAt = time.Now()
 	urlsh.ShortURL = shortBaseURL + shortID

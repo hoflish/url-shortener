@@ -69,8 +69,6 @@ func (db *mongoDB) Fetch(ctx context.Context, shortURL string) (*models.URLShort
 
 // Store method stores a new Url Resource
 func (db *mongoDB) Store(ctx context.Context, us *models.URLShorten) (*models.URLShorten, error) {
-	us.ID = bson.NewObjectId()
-
 	if err := db.c.Insert(us); err != nil {
 		return nil, err
 	}
