@@ -3,90 +3,65 @@ package http
 import (
 	"net/http"
 
-	"github.com/hoflish/url-shortener/api/urlshorten"
-
 	models "github.com/hoflish/url-shortener/api/models"
+	urlsh "github.com/hoflish/url-shortener/api/urlshorten"
 	"github.com/labstack/echo"
-	"github.com/sirupsen/logrus"
 )
 
-// TODO: Refactor this code
-
-type ResponseError struct {
-	Message string `json:"message"`
-}
-
 type HTTPURLShortenHandler struct {
-	USUsecase urlshorten.URLShortenUsecase
+	USUsecase urlsh.URLShortenUsecase
 }
 
 // Get method gets information for a specified short URL
 func (h *HTTPURLShortenHandler) Get(c echo.Context) error {
-	/*
-		TODO: sanitize and validate shortUrl query param
-			1. [done] make sure the param is set (str != "")
-			2. [done] make sure the param is a url
-			3. [x] check if the url has a length equal to 'LENGTH',
-				(LENGTH should be defined later using host + generated id)
-			4. ...
-	*/
-	qparam := "shortUrl"
+	qparam := "shortUrl" // required query param
 	query := c.QueryParams()
+	qparams := []string{qparam}
 
 	if _, ok := query[qparam]; !ok {
-		return c.JSON(
-			http.StatusUnprocessableEntity,
-			ResponseError{Message: models.ErrorMissingQueryParam.Error()},
-		)
+		return NewResponseError(c, ErrorMissingParam, qparams)
 	}
 
-	urlShort := query.Get(qparam)
-
-	if !urlshorten.IsRequestURL(urlShort) {
-		return c.JSON(
-			http.StatusBadRequest,
-			ResponseError{Message: models.ErrorInvalidURL.Error()},
-		)
+	shortURL := query.Get(qparam)
+	if !urlsh.IsRequestURL(shortURL) {
+		return NewResponseError(c, ErrorInvalidParam, qparams)
 	}
 
 	ctx := c.Request().Context()
-
-	item, err := h.USUsecase.Fetch(ctx, urlShort)
-
+	item, err := h.USUsecase.Fetch(ctx, shortURL)
 	if err != nil {
-		return c.JSON(getStatusCode(err), ResponseError{Message: err.Error()})
+		return NewResponseError(c, err, qparams)
 	}
-	return c.JSON(http.StatusOK, item)
+
+	return jsonData(c, http.StatusOK, item)
 }
 
 // Insert creates new Short URL
 func (h *HTTPURLShortenHandler) Insert(c echo.Context) error {
 	var urlShorten models.URLShorten
+	formParam := "longUrl" // required form value
+	formParams := []string{formParam}
+
 	err := c.Bind(&urlShorten)
 	if err != nil {
-		return c.JSON(http.StatusUnprocessableEntity, err.Error())
+		return NewResponseError(c, err, formParams)
 	}
 
-	if !urlshorten.IsRequestURL(urlShorten.LongURL) {
-		return c.JSON(
-			http.StatusBadRequest,
-			ResponseError{Message: models.ErrorInvalidURL.Error()},
-		)
+	if !urlsh.IsRequestURL(urlShorten.LongURL) {
+		return NewResponseError(c, ErrorInvalidParam, formParams)
 	}
 
 	ctx := c.Request().Context()
 	res, err := h.USUsecase.Store(ctx, &urlShorten)
-
 	if err != nil {
-		return c.JSON(getStatusCode(err), ResponseError{Message: err.Error()})
+		return NewResponseError(c, err, formParams)
 	}
 
-	return c.JSON(http.StatusOK, res)
-
+	return jsonData(c, http.StatusOK, res)
 }
 
-// NewHttpURLShortenHandler defines API endpoints
-func NewHTTPURLShortenHandler(e *echo.Echo, u urlshorten.URLShortenUsecase) {
+// NewHTTPURLShortenHandler defines API endpoints
+func NewHTTPURLShortenHandler(e *echo.Echo, u urlsh.URLShortenUsecase) {
 	handler := &HTTPURLShortenHandler{
 		USUsecase: u,
 	}
@@ -94,20 +69,9 @@ func NewHTTPURLShortenHandler(e *echo.Echo, u urlshorten.URLShortenUsecase) {
 	e.POST("/api/url", handler.Insert)
 }
 
-func getStatusCode(err error) int {
-
-	if err == nil {
-		return http.StatusOK
+func jsonData(c echo.Context, status int, data interface{}) error {
+	d := map[string]interface{}{
+		"data": data,
 	}
-	// REVIEW: Refactor this code
-	logrus.Error(err)
-
-	switch err {
-	case models.ErrorInternalServer:
-		return http.StatusInternalServerError
-	case models.ErrorNotFound:
-		return http.StatusNotFound
-	default:
-		return http.StatusInternalServerError
-	}
+	return c.JSON(status, d)
 }
