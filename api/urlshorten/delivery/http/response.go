@@ -1,6 +1,8 @@
 package http
 
 import (
+	"reflect"
+
 	"github.com/labstack/echo"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/mgo.v2"
@@ -85,8 +87,12 @@ func NewResponseError(ctx echo.Context, err error, params []string) error {
 	cliErrs := make([]*clientError, 0)
 	status, cli := statusCode(err)
 	resp := &RespponseError{}
-
 	resp.Status = status
+
+	paramsv := reflect.TypeOf(params)
+	if paramsv.Kind() != reflect.Slice {
+		panic("params argument must be a slice")
+	}
 
 	if status >= 400 && status < 500 {
 		if ctx.Request().Method == "POST" || ctx.Request().Method == "PUT" || ctx.Request().Method == "PATCH" {
