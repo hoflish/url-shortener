@@ -9,6 +9,7 @@ import (
 	usecase "github.com/hoflish/url-shortener/api/urlshorten/usecase"
 	"github.com/labstack/echo"
 	"github.com/sirupsen/logrus"
+	mgo "gopkg.in/mgo.v2"
 )
 
 const (
@@ -21,16 +22,39 @@ func main() {
 		host = defaultHost
 	}
 
-	conn, err := db.NewMongoDB(host)
+	dbConn, err := mgo.Dial(host)
 	if err != nil {
 		logrus.Panicf("Init DB: %v", err)
 	}
-	defer conn.Close()
 
-	timeoutContext := time.Duration(2) * time.Second
+	dbConn.SetMode(mgo.Monotonic, true)
+	c := dbConn.DB("url-shortener").C("urlshorten")
+
+	index := mgo.Index{
+		Key:        []string{"shorturl"},
+		Unique:     true,
+		DropDups:   true,
+		Background: true,
+		Sparse:     true,
+	}
+	err = c.EnsureIndex(index)
+	if err != nil {
+		logrus.Error(err)
+	}
+
+	err = dbConn.Ping()
+	if err != nil {
+		logrus.Fatal(err)
+		os.Exit(1)
+	}
+	defer dbConn.Close()
 
 	e := echo.New()
-	uu := usecase.NewURLShortenUsecase(conn, timeoutContext)
+
+	urlshDB := db.NewMongoDB(dbConn)
+	timeoutContext := time.Duration(2) * time.Second
+
+	uu := usecase.NewURLShortenUsecase(urlshDB, timeoutContext)
 	httpDeliver.NewHTTPURLShortenHandler(e, uu)
 
 	e.Start(":8080")
