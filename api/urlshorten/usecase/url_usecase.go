@@ -8,6 +8,8 @@ import (
 
 	"github.com/hoflish/url-shortener/api/models"
 	dal "github.com/hoflish/url-shortener/api/urlshorten"
+	"github.com/hoflish/url-shortener/api/urlshorten/delivery/http"
+	"github.com/sirupsen/logrus"
 	"github.com/teris-io/shortid"
 )
 
@@ -35,8 +37,6 @@ func (uc *URLShortenUsecase) Fetch(c context.Context, shortURL string) (*models.
 	if err != nil {
 		return nil, err
 	}
-	defer uc.DB.Close()
-
 	return item, nil
 }
 
@@ -48,7 +48,8 @@ func (uc *URLShortenUsecase) Store(c context.Context, urlsh *models.URLShorten) 
 	// TODO: refactor this code to be more safe
 	shortID, err := shortid.Generate()
 	if err != nil {
-		return nil, err
+		logrus.Error(err)
+		return nil, http.ErrorShortID
 	}
 
 	urlsh.ID = bson.NewObjectId()
@@ -60,8 +61,6 @@ func (uc *URLShortenUsecase) Store(c context.Context, urlsh *models.URLShorten) 
 	if err != nil {
 		return nil, err
 	}
-	defer uc.DB.Close()
-
 	return res, nil
 }
 
