@@ -15,69 +15,38 @@ const (
 )
 
 type mongoDB struct {
-	session *mgo.Session
-	c       *mgo.Collection
+	Sess *mgo.Session
 }
 
-// NewMongoDB creates a new BookDatabase backed by a given Mongo server,
-func NewMongoDB(addr string) (dal.DataAccessLayer, error) {
-	/*
-		TODO:
-		- Authenticate with given credentials.
-		Signature:
-			NewMongoDB(addr string, cred *mgo.Credential)
-	*/
-	session, err := mgo.Dial(addr)
-	if err != nil {
-		return nil, err
-	}
-
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB(dbName).C(urlShortenCollection)
-
-	index := mgo.Index{
-		Key:        []string{"shorturl"},
-		Unique:     true,
-		DropDups:   true,
-		Background: true,
-		Sparse:     true,
-	}
-	err = c.EnsureIndex(index)
-	if err != nil {
-		return nil, err
-	}
-
-	mongo := &mongoDB{
-		session: session.Copy(),
-		c:       c,
-	}
-	return mongo, nil
+// NewMongoDB creates a new DB backed by a given Mongo server,
+func NewMongoDB(Sess *mgo.Session) dal.DataAccessLayer {
+	return &mongoDB{Sess: Sess.Clone()}
 }
 
 // Fetch method gets a specified Url Resource
 func (db *mongoDB) Fetch(ctx context.Context, shortURL string) (*models.URLShorten, error) {
 	result := models.URLShorten{}
-
-	if err := db.c.Find(bson.M{"shorturl": shortURL}).One(&result); err != nil {
-		if err == mgo.ErrNotFound {
-			return nil, models.ErrorNotFound
-		}
+	if err := db.collection().Find(bson.M{"shorturl": shortURL}).One(&result); err != nil {
 		return nil, err
 	}
+
 	return &result, nil
 }
 
 // Store method stores a new Url Resource
 func (db *mongoDB) Store(ctx context.Context, us *models.URLShorten) (*models.URLShorten, error) {
-	if err := db.c.Insert(us); err != nil {
+	if err := db.collection().Insert(us); err != nil {
 		return nil, err
 	}
+
 	return us, nil
+}
+
+func (db *mongoDB) collection() *mgo.Collection {
+	return db.Sess.DB(dbName).C(urlShortenCollection)
 }
 
 // Close closes database connection
 func (db *mongoDB) Close() {
-	if db.session != nil {
-		db.session.Close()
-	}
+	db.Sess.Close()
 }
