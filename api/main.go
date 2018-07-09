@@ -4,16 +4,16 @@ import (
 	"os"
 	"time"
 
-	db "github.com/hoflish/url-shortener/api/urlshorten/db"
-	httpDeliver "github.com/hoflish/url-shortener/api/urlshorten/delivery/http"
-	usecase "github.com/hoflish/url-shortener/api/urlshorten/usecase"
+	"github.com/hoflish/url-shortener/api/urlshorten/db"
+	httpDelivery "github.com/hoflish/url-shortener/api/urlshorten/delivery/http"
+	"github.com/hoflish/url-shortener/api/urlshorten/usecase"
 	"github.com/labstack/echo"
 	"github.com/sirupsen/logrus"
-	mgo "gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2"
 )
 
 const (
-	defaultHost = "192.168.99.100:27017"
+	defaultHost = "127.0.0.1:27017"
 )
 
 func main() {
@@ -22,13 +22,13 @@ func main() {
 		host = defaultHost
 	}
 
-	dbConn, err := mgo.Dial(host)
+	sess, err := mgo.Dial(host)
 	if err != nil {
 		logrus.Panicf("Init DB: %v", err)
 	}
 
-	dbConn.SetMode(mgo.Monotonic, true)
-	c := dbConn.DB("url-shortener").C("urlshorten")
+	sess.SetMode(mgo.Monotonic, true)
+	c := sess.DB(db.Name).C(db.Collection)
 
 	index := mgo.Index{
 		Key:        []string{"shorturl"},
@@ -42,20 +42,20 @@ func main() {
 		logrus.Error(err)
 	}
 
-	err = dbConn.Ping()
+	err = sess.Ping()
 	if err != nil {
 		logrus.Fatal(err)
 		os.Exit(1)
 	}
-	defer dbConn.Close()
+	defer sess.Close()
 
 	e := echo.New()
 
-	urlshDB := db.NewMongoDB(dbConn)
+	urlshDB := db.NewMongoDB(sess)
 	timeoutContext := time.Duration(2) * time.Second
 
-	uu := usecase.NewURLShortenUsecase(urlshDB, timeoutContext)
-	httpDeliver.NewHTTPURLShortenHandler(e, uu)
+	ucs := usecase.NewURLShortenUsecase(urlshDB, timeoutContext)
+	httpDelivery.NewHTTPURLShortenHandler(e, ucs)
 
 	e.Start(":8080")
 }
