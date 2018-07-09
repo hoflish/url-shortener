@@ -15,11 +15,14 @@ type mongoDB struct {
 
 // NewMongoDB creates a new DB backed by a given Mongo server,
 func NewMongoDB(Sess *mgo.Session) dal.DataAccessLayer {
-	return &mongoDB{Sess: Sess.Clone()}
+	return &mongoDB{Sess}
 }
 
 // Fetch method gets a specified Url Resource
 func (db *mongoDB) Fetch(ctx context.Context, shortURL string) (*models.URLShorten, error) {
+	s := db.Sess.Copy()
+	defer s.Close()
+
 	result := models.URLShorten{}
 	if err := db.collection().Find(bson.M{"shorturl": shortURL}).One(&result); err != nil {
 		return nil, err
@@ -30,6 +33,9 @@ func (db *mongoDB) Fetch(ctx context.Context, shortURL string) (*models.URLShort
 
 // Store method stores a new Url Resource
 func (db *mongoDB) Store(ctx context.Context, us *models.URLShorten) (*models.URLShorten, error) {
+	s := db.Sess.Copy()
+	defer s.Close()
+
 	if err := db.collection().Insert(us); err != nil {
 		return nil, err
 	}
