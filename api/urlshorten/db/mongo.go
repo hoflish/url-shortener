@@ -9,11 +9,6 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-const (
-	dbName               = "url-shortener"
-	urlShortenCollection = "urlshorten"
-)
-
 type mongoDB struct {
 	Sess *mgo.Session
 }
@@ -43,7 +38,7 @@ func (db *mongoDB) Store(ctx context.Context, us *models.URLShorten) (*models.UR
 }
 
 func (db *mongoDB) collection() *mgo.Collection {
-	return db.Sess.DB(dbName).C(urlShortenCollection)
+	return db.Sess.DB(Name).C(Collection)
 }
 
 // Close closes database connection
