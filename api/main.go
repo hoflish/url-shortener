@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/hoflish/url-shortener/api/urlshorten/db"
-	httpDelivery "github.com/hoflish/url-shortener/api/urlshorten/delivery/http"
+	"github.com/hoflish/url-shortener/api/urlshorten/delivery/http"
 	"github.com/hoflish/url-shortener/api/urlshorten/usecase"
 	"github.com/labstack/echo"
 	"github.com/sirupsen/logrus"
@@ -55,7 +55,10 @@ func main() {
 	timeoutContext := time.Duration(2) * time.Second
 
 	ucs := usecase.NewURLShortenUsecase(urlshDB, timeoutContext)
-	httpDelivery.NewHTTPURLShortenHandler(e, ucs)
+	h := httphandler.NewHTTPURLShortenHandler(e, ucs)
+
+	e.GET("/api/url", h.Get)
+	e.POST("/api/url", h.Insert)
 
 	e.Start(":8080")
 }

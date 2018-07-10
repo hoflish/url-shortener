@@ -1,4 +1,4 @@
-package http
+package httphandler
 
 import (
 	"net/http"
@@ -61,12 +61,10 @@ func (h *HTTPURLShortenHandler) Insert(c echo.Context) error {
 }
 
 // NewHTTPURLShortenHandler defines API endpoints
-func NewHTTPURLShortenHandler(e *echo.Echo, u urlsh.URLShortenUsecase) {
-	handler := &HTTPURLShortenHandler{
+func NewHTTPURLShortenHandler(e *echo.Echo, u urlsh.URLShortenUsecase) *HTTPURLShortenHandler {
+	return &HTTPURLShortenHandler{
 		USUsecase: u,
 	}
-	e.GET("/api/url", handler.Get)
-	e.POST("/api/url", handler.Insert)
 }
 
 func jsonData(c echo.Context, status int, data interface{}) error {

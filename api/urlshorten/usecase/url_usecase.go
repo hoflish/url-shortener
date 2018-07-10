@@ -49,7 +49,7 @@ func (uc *URLShortenUsecase) Store(c context.Context, urlsh *models.URLShorten) 
 	shortID, err := shortid.Generate()
 	if err != nil {
 		logrus.Error(err)
-		return nil, http.ErrorShortID
+		return nil, httphandler.ErrorShortID
 	}
 
 	urlsh.ID = bson.NewObjectId()
