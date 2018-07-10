@@ -1,6 +1,10 @@
 package db
 
+// Database constants
 const (
-	Name       = "url-shortener"
+	// DB name
+	Name = "url-shortener"
+
+	// DB collection
 	Collection = "urlshorten"
 )
