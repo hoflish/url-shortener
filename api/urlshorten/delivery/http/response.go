@@ -1,6 +1,7 @@
-package http
+package httphandler
 
 import (
+	"net/url"
 	"reflect"
 
 	"github.com/labstack/echo"
@@ -9,17 +10,25 @@ import (
 )
 
 type (
-	RespponseError struct {
-		Request map[string]interface{} `json:"request,omitempty"`
-		Errors  []*clientError
-		Status  int `json:"status,omitempty"`
+	// ResponseError represents the typical response structure
+	// for a given error
+	ResponseError struct {
+		Request *request       `json:"request,omitempty"`
+		Errors  []*clientError `json:"errors,omitempty"`
+		Status  int            `json:"status,omitempty"`
+	}
+
+	request struct {
+		Params        url.Values `json:"params,omitempty"`
+		Form          url.Values `json:"form,omitempty"`
+		OperationType string     `json:"operation_type,omitempty"`
 	}
 
 	clientError struct {
-		Code      string      `json:"code,omitempty"`
-		Message   string      `json:"message,omitempty"`
-		Parameter string      `json:"parameter,omitempty"`
-		Value     interface{} `json:"value,omitempty"`
+		Code      string `json:"code,omitempty"`
+		Message   string `json:"message,omitempty"`
+		Parameter string `json:"parameter,omitempty"`
+		Value     string `json:"value,omitempty"`
 	}
 )
 
@@ -86,7 +95,7 @@ func statusCode(err error) (int, *clientError) {
 func NewResponseError(ctx echo.Context, err error, params []string) error {
 	cliErrs := make([]*clientError, 0)
 	status, cli := statusCode(err)
-	resp := &RespponseError{}
+	resp := &ResponseError{}
 	resp.Status = status
 
 	paramsv := reflect.TypeOf(params)
@@ -100,13 +109,11 @@ func NewResponseError(ctx echo.Context, err error, params []string) error {
 			if err != nil {
 				logrus.Error(err)
 			}
-			resp.Request = map[string]interface{}{
-				"form": formParams,
-			}
+			req := &request{Form: formParams}
+			resp.Request = req
 		} else {
-			resp.Request = map[string]interface{}{
-				"params": ctx.QueryParams(),
-			}
+			req := &request{Params: ctx.QueryParams()}
+			resp.Request = req
 		}
 
 		if len(params) > 1 {
