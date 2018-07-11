@@ -1,8 +1,7 @@
 package db
 
 import (
-	"context"
-
+	"github.com/gin-gonic/gin"
 	"github.com/hoflish/url-shortener/api/models"
 	dal "github.com/hoflish/url-shortener/api/urlshorten"
 	"gopkg.in/mgo.v2"
@@ -19,7 +18,7 @@ func NewMongoDB(Sess *mgo.Session) dal.DataAccessLayer {
 }
 
 // Fetch method gets a specified Url Resource
-func (db *mongoDB) Fetch(ctx context.Context, shortURL string) (*models.URLShorten, error) {
+func (db *mongoDB) Fetch(ctx *gin.Context, shortURL string) (*models.URLShorten, error) {
 	s := db.Sess.Copy()
 	defer s.Close()
 
@@ -32,7 +31,7 @@ func (db *mongoDB) Fetch(ctx context.Context, shortURL string) (*models.URLShort
 }
 
 // Store method stores a new Url Resource
-func (db *mongoDB) Store(ctx context.Context, us *models.URLShorten) (*models.URLShorten, error) {
+func (db *mongoDB) Store(ctx *gin.Context, us *models.URLShorten) (*models.URLShorten, error) {
 	s := db.Sess.Copy()
 	defer s.Close()
 

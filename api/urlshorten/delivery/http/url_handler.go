@@ -3,9 +3,11 @@ package httphandler
 import (
 	"net/http"
 
-	models "github.com/hoflish/url-shortener/api/models"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+
+	"github.com/hoflish/url-shortener/api/models"
 	urlsh "github.com/hoflish/url-shortener/api/urlshorten"
-	"github.com/labstack/echo"
 )
 
 type HTTPURLShortenHandler struct {
@@ -13,63 +15,65 @@ type HTTPURLShortenHandler struct {
 }
 
 // Get method gets information for a specified short URL
-func (h *HTTPURLShortenHandler) Get(c echo.Context) error {
-	qparam := "shortUrl" // required query param
-	query := c.QueryParams()
-	qparams := []string{qparam}
+func (h *HTTPURLShortenHandler) Get(c *gin.Context) {
+	qParam := "shortUrl" // required query param
+	qParams := []string{qParam}
+	qValue, ok := c.GetQuery(qParam)
 
-	if _, ok := query[qparam]; !ok {
-		return NewResponseError(c, ErrorMissingParam, qparams)
+	if !ok {
+		jsonErrResponse(c, ErrorMissingParam, qParams)
+		return
 	}
 
-	shortURL := query.Get(qparam)
-	if !urlsh.IsRequestURL(shortURL) {
-		return NewResponseError(c, ErrorInvalidParam, qparams)
+	if !urlsh.IsRequestURL(qValue) {
+		jsonErrResponse(c, ErrorInvalidParam, qParams)
+		return
 	}
 
-	ctx := c.Request().Context()
-	item, err := h.USUsecase.Fetch(ctx, shortURL)
+	item, err := h.USUsecase.Fetch(c, qValue)
 	if err != nil {
-		return NewResponseError(c, err, qparams)
+		jsonErrResponse(c, err, qParams)
+		return
 	}
 
-	return jsonData(c, http.StatusOK, item)
+	jsonData(c, http.StatusOK, item)
 }
 
 // Insert creates new Short URL
-func (h *HTTPURLShortenHandler) Insert(c echo.Context) error {
-	var urlShorten models.URLShorten
-	formParam := "longUrl" // required form value
-	formParams := []string{formParam}
+func (h *HTTPURLShortenHandler) Insert(c *gin.Context) {
+	var urlSh models.URLShorten
+	if c.ShouldBindWith(&urlSh, binding.FormPost) != nil {
+		jsonErrResponse(c, ErrorInvalidParam, []string{})
+		return
+	}
 
-	err := c.Bind(&urlShorten)
+	if !urlsh.IsRequestURL(urlSh.LongURL) {
+		return
+	}
+
+	res, err := h.USUsecase.Store(c, &urlSh)
 	if err != nil {
-		return NewResponseError(c, err, formParams)
+		jsonErrResponse(c, err, []string{})
+		return
 	}
 
-	if !urlsh.IsRequestURL(urlShorten.LongURL) {
-		return NewResponseError(c, ErrorInvalidParam, formParams)
-	}
-
-	ctx := c.Request().Context()
-	res, err := h.USUsecase.Store(ctx, &urlShorten)
-	if err != nil {
-		return NewResponseError(c, err, formParams)
-	}
-
-	return jsonData(c, http.StatusOK, res)
+	jsonData(c, http.StatusOK, res)
 }
 
 // NewHTTPURLShortenHandler defines API endpoints
-func NewHTTPURLShortenHandler(e *echo.Echo, u urlsh.URLShortenUsecase) *HTTPURLShortenHandler {
+func NewHTTPURLShortenHandler(u urlsh.URLShortenUsecase) *HTTPURLShortenHandler {
 	return &HTTPURLShortenHandler{
 		USUsecase: u,
 	}
 }
 
-func jsonData(c echo.Context, status int, data interface{}) error {
-	d := map[string]interface{}{
+func jsonData(c *gin.Context, status int, data interface{}) {
+	c.JSON(status, gin.H{
 		"data": data,
-	}
-	return c.JSON(status, d)
+	})
+}
+
+func jsonErrResponse(c *gin.Context, err error, params []string) {
+	status, resp := NewResponseError(c, err, params)
+	c.JSON(status, resp)
 }

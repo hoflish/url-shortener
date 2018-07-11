@@ -4,7 +4,7 @@ import (
 	"net/url"
 	"reflect"
 
-	"github.com/labstack/echo"
+	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/mgo.v2"
 )
@@ -13,22 +13,21 @@ type (
 	// ResponseError represents the typical response structure
 	// for a given error
 	ResponseError struct {
-		Request *request       `json:"request,omitempty"`
-		Errors  []*clientError `json:"errors,omitempty"`
-		Status  int            `json:"status,omitempty"`
+		Request *request       `json:"request"`
+		Errors  []*clientError `json:"errors"`
+		Status  int            `json:"status"`
 	}
 
 	request struct {
-		Params        url.Values `json:"params,omitempty"`
-		Form          url.Values `json:"form,omitempty"`
-		OperationType string     `json:"operation_type,omitempty"`
+		Params        url.Values `json:"params"`
+		OperationType string     `json:"operation_type"`
 	}
 
 	clientError struct {
-		Code      string `json:"code,omitempty"`
-		Message   string `json:"message,omitempty"`
-		Parameter string `json:"parameter,omitempty"`
-		Value     string `json:"value,omitempty"`
+		Code      string `json:"code"`
+		Message   string `json:"message"`
+		Parameter string `json:"parameter"`
+		Value     string `json:"value"`
 	}
 )
 
@@ -39,9 +38,6 @@ func isInternalError(err error) bool {
 		return true
 	case *mgo.LastError:
 		logrus.Error("DB: LastError: %v, code: %d", e.Err, e.Code)
-		return true
-	}
-	if err == ErrorShortID {
 		return true
 	}
 	return false
@@ -92,27 +88,22 @@ func statusCode(err error) (int, *clientError) {
 }
 
 // NewResponseError returns a formatted error Response
-func NewResponseError(ctx echo.Context, err error, params []string) error {
-	cliErrs := make([]*clientError, 0)
-	status, cli := statusCode(err)
-	resp := &ResponseError{}
-	resp.Status = status
-
+func NewResponseError(ctx *gin.Context, err error, params []string) (int, *ResponseError) {
 	paramsv := reflect.TypeOf(params)
 	if paramsv.Kind() != reflect.Slice {
 		panic("params argument must be a slice")
 	}
 
+	cliErrs := make([]*clientError, 0)
+	status, cli := statusCode(err)
+	resp := &ResponseError{}
+	resp.Status = status
+
 	if status >= 400 && status < 500 {
-		if ctx.Request().Method == "POST" || ctx.Request().Method == "PUT" || ctx.Request().Method == "PATCH" {
-			formParams, err := ctx.FormParams()
-			if err != nil {
-				logrus.Error(err)
-			}
-			req := &request{Form: formParams}
-			resp.Request = req
+		if ctx.Request.Method == "GET" {
+
 		} else {
-			req := &request{Params: ctx.QueryParams()}
+			req := &request{Params: ctx.Request.URL.Query()}
 			resp.Request = req
 		}
 
@@ -120,19 +111,19 @@ func NewResponseError(ctx echo.Context, err error, params []string) error {
 			for _, p := range params {
 				cli.Message = err.Error()
 				cli.Parameter = p
-				cli.Value = ctx.QueryParam(p)
+				cli.Value = ctx.Query(p)
 				resp.Errors = append(cliErrs, cli)
 			}
 		} else {
 			cli.Message = err.Error()
 			cli.Parameter = params[0]
-			cli.Value = ctx.QueryParam(params[0])
+			cli.Value = ctx.Query(params[0])
 			resp.Errors = append(cliErrs, cli)
 		}
-		return ctx.JSON(status, resp)
+		return status, resp
 	}
 
 	cli.Message = err.Error()
 	resp.Errors = append(cliErrs, cli)
-	return ctx.JSON(status, resp)
+	return status, resp
 }
