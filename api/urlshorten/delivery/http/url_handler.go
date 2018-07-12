@@ -1,10 +1,13 @@
 package httphandler
 
 import (
+	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"github.com/sirupsen/logrus"
 
 	"github.com/hoflish/url-shortener/api/models"
 	urlsh "github.com/hoflish/url-shortener/api/urlshorten"
@@ -16,23 +19,34 @@ type HTTPURLShortenHandler struct {
 
 // Get method gets information for a specified short URL
 func (h *HTTPURLShortenHandler) Get(c *gin.Context) {
-	qParam := "shortUrl" // required query param
-	qParams := []string{qParam}
-	qValue, ok := c.GetQuery(qParam)
+	qValue, ok := c.GetQuery("shortUrl")
 
 	if !ok {
-		jsonErrResponse(c, ErrorMissingParam, qParams)
+		e := NewAPIError(400, CodeMissingParam, errors.New("Missing 'shortUrl' query parameter"))
+		c.JSON(e.Status, e)
 		return
 	}
 
 	if !urlsh.IsRequestURL(qValue) {
-		jsonErrResponse(c, ErrorInvalidParam, qParams)
+		e := NewAPIError(422, CodeInvalidParam, fmt.Errorf("Invalid shortUrl: %s", qValue))
+		c.JSON(e.Status, e)
 		return
 	}
 
 	item, err := h.USUsecase.Fetch(c, qValue)
 	if err != nil {
-		jsonErrResponse(c, err, qParams)
+		if IsDBError(err) {
+			c.JSON(500, ErrAPIInternal)
+			return
+		}
+
+		if IsNotFound(err) {
+			c.JSON(404, ErrAPINotFound)
+			return
+		}
+
+		logrus.Error(err)
+		c.JSON(520, ErrAPIUnknown)
 		return
 	}
 
@@ -42,18 +56,31 @@ func (h *HTTPURLShortenHandler) Get(c *gin.Context) {
 // Insert creates new Short URL
 func (h *HTTPURLShortenHandler) Insert(c *gin.Context) {
 	var urlSh models.URLShorten
-	if c.ShouldBindWith(&urlSh, binding.FormPost) != nil {
-		jsonErrResponse(c, ErrorInvalidParam, []string{})
-		return
-	}
-
-	if !urlsh.IsRequestURL(urlSh.LongURL) {
+	if err := c.ShouldBindWith(&urlSh, binding.FormPost); err != nil || !urlsh.IsRequestURL(urlSh.LongURL) {
+		if err == nil {
+			e := NewAPIError(422, CodeInvalidParam, fmt.Errorf("Invalid longUrl: %s", urlSh.LongURL))
+			c.JSON(e.Status, e)
+			return
+		}
+		e := NewAPIError(400, CodeInvalidParam, fmt.Errorf(err.Error()))
+		c.JSON(e.Status, e)
 		return
 	}
 
 	res, err := h.USUsecase.Store(c, &urlSh)
 	if err != nil {
-		jsonErrResponse(c, err, []string{})
+		if IsDBError(err) {
+			c.JSON(500, ErrAPIInternal)
+			return
+		}
+
+		if IsNotFound(err) {
+			c.JSON(404, ErrAPINotFound)
+			return
+		}
+
+		logrus.Error(err)
+		c.JSON(520, ErrAPIUnknown)
 		return
 	}
 
@@ -71,9 +98,4 @@ func jsonData(c *gin.Context, status int, data interface{}) {
 	c.JSON(status, gin.H{
 		"data": data,
 	})
-}
-
-func jsonErrResponse(c *gin.Context, err error, params []string) {
-	status, resp := NewResponseError(c, err, params)
-	c.JSON(status, resp)
 }
