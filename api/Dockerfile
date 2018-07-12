@@ -2,18 +2,23 @@
 # Set the 'golang:1.9.0' image for subsequent instructions
 FROM golang:1.9.0 as builder
 
-# setup the working directory
-WORKDIR /go/src/github.com/hoflish/url-shortener/api
-# copy source code
-COPY . .
-
 # install dep
 RUN go get -u github.com/golang/dep/cmd/dep
+
+# setup the working directory
+WORKDIR /go/src/github.com/hoflish/url-shortener/api
+
+# add Gopkg.toml and Gopkg.lock
+COPY Gopkg.toml ./
+COPY Gopkg.lock ./
 
 # install packages
 # --vendor-only is used to restrict dep from scanning source code
 # and finding dependencies
-RUN dep init && dep ensure --vendor-only
+RUN dep ensure --vendor-only
+
+# copy source code
+COPY . .
 
 # build the source
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main main.go

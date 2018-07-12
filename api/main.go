@@ -1,13 +1,15 @@
 package main
 
 import (
+	"net/http"
 	"os"
 	"time"
+
+	"github.com/gin-gonic/gin"
 
 	"github.com/hoflish/url-shortener/api/urlshorten/db"
 	"github.com/hoflish/url-shortener/api/urlshorten/delivery/http"
 	"github.com/hoflish/url-shortener/api/urlshorten/usecase"
-	"github.com/labstack/echo"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/mgo.v2"
 )
@@ -17,6 +19,7 @@ const (
 )
 
 func main() {
+	// Setup original DB session
 	host := os.Getenv("DB_HOST")
 	if host == "" {
 		host = defaultHost
@@ -49,16 +52,24 @@ func main() {
 	}
 	defer sess.Close()
 
-	e := echo.New()
+	// HTTP Web server handler
+	r := gin.New()
+
+	s := &http.Server{
+		Addr:           ":8080",
+		Handler:        r,
+		ReadTimeout:    10 * time.Second,
+		WriteTimeout:   10 * time.Second,
+		MaxHeaderBytes: 1 << 20,
+	}
 
 	urlshDB := db.NewMongoDB(sess)
-	timeoutContext := time.Duration(2) * time.Second
 
-	ucs := usecase.NewURLShortenUsecase(urlshDB, timeoutContext)
-	h := httphandler.NewHTTPURLShortenHandler(e, ucs)
+	ucs := usecase.NewURLShortenUsecase(urlshDB)
+	h := httphandler.NewHTTPURLShortenHandler(ucs)
 
-	e.GET("/api/url", h.Get)
-	e.POST("/api/url", h.Insert)
+	r.GET("/api/url", h.Get)
+	r.POST("/api/url", h.Insert)
 
-	e.Start(":8080")
+	s.ListenAndServe() // listen and serve on 0.0.0.0:8080
 }

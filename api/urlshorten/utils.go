@@ -1,8 +1,6 @@
 package urlshorten
 
-import (
-	"net/url"
-)
+import "net/url"
 
 // IsRequestURL check if the string rawurl, assuming
 // it was received in an HTTP request, is a valid

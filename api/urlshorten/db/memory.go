@@ -1,10 +1,10 @@
 package db
 
 import (
-	"context"
 	"fmt"
 	"sync"
 
+	"github.com/gin-gonic/gin"
 	"github.com/hoflish/url-shortener/api/models"
 
 	dal "github.com/hoflish/url-shortener/api/urlshorten"
@@ -35,7 +35,7 @@ func (db *MemoryDB) Close() {
 }
 
 // Fetch retrieves URLShorten resource by its shortURL
-func (db *MemoryDB) Fetch(ctx context.Context, shortURL string) (*models.URLShorten, error) {
+func (db *MemoryDB) Fetch(ctx *gin.Context, shortURL string) (*models.URLShorten, error) {
 	db.mu.Lock()
 	defer db.mu.Unlock()
 
@@ -48,7 +48,7 @@ func (db *MemoryDB) Fetch(ctx context.Context, shortURL string) (*models.URLShor
 }
 
 // Store adds URLShorten resource to urlshorten repos
-func (db *MemoryDB) Store(ctx context.Context, urlsh *models.URLShorten) (*models.URLShorten, error) {
+func (db *MemoryDB) Store(ctx *gin.Context, urlsh *models.URLShorten) (*models.URLShorten, error) {
 	db.mu.Lock()
 	defer db.mu.Unlock()
 
