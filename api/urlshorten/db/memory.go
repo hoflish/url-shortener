@@ -30,7 +30,6 @@ func NewMemoryDB() *MemoryDB {
 func (db *MemoryDB) Close() {
 	db.mu.Lock()
 	defer db.mu.Unlock()
-
 	db.urlshortens = nil
 }
 
@@ -43,7 +42,6 @@ func (db *MemoryDB) Fetch(ctx *gin.Context, shortURL string) (*models.URLShorten
 	if !ok {
 		return nil, httphandler.ErrNotFound
 	}
-
 	return urlsh, nil
 }
 
@@ -53,7 +51,6 @@ func (db *MemoryDB) Store(ctx *gin.Context, urlsh *models.URLShorten) (*models.U
 	defer db.mu.Unlock()
 
 	db.urlshortens[urlsh.ShortURL] = urlsh
-
 	return urlsh, nil
 }
 

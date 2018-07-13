@@ -26,7 +26,6 @@ func (db *mongoDB) Fetch(ctx *gin.Context, shortURL string) (*models.URLShorten,
 	if err := db.collection().Find(bson.M{"shorturl": shortURL}).One(&result); err != nil {
 		return nil, err
 	}
-
 	return &result, nil
 }
 
@@ -38,7 +37,6 @@ func (db *mongoDB) Store(ctx *gin.Context, us *models.URLShorten) (*models.URLSh
 	if err := db.collection().Insert(us); err != nil {
 		return nil, err
 	}
-
 	return us, nil
 }
 
