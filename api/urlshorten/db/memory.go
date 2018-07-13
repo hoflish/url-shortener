@@ -1,13 +1,13 @@
 package db
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/gin-gonic/gin"
 	"github.com/hoflish/url-shortener/api/models"
 
 	dal "github.com/hoflish/url-shortener/api/urlshorten"
+	"github.com/hoflish/url-shortener/api/urlshorten/delivery/http"
 )
 
 // Ensure MemoryDB conforms to DataAccessLayer interface.
@@ -41,7 +41,7 @@ func (db *MemoryDB) Fetch(ctx *gin.Context, shortURL string) (*models.URLShorten
 
 	urlsh, ok := db.urlshortens[shortURL]
 	if !ok {
-		return nil, fmt.Errorf("Memorydb: URLShorten not found with shortURL %s", shortURL)
+		return nil, httphandler.ErrNotFound
 	}
 
 	return urlsh, nil

@@ -8,7 +8,7 @@ import (
 )
 
 type APIError struct {
-	Err     map[string]interface{} `json:"errors"`
+	Err     map[string]interface{} `json:"error"`
 	Status  int                    `json:"status"`
 	Message string                 `json:"message"`
 }
@@ -49,7 +49,7 @@ func NewAPIError(status int, code string, err error) *APIError {
 	errs = append(errs, e)
 	return &APIError{
 		Err: map[string]interface{}{
-			"Errors": errs,
+			"errors": errs,
 		},
 		Status:  status,
 		Message: e.Message,

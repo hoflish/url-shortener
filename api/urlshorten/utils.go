@@ -1,6 +1,20 @@
 package urlshorten
 
-import "net/url"
+import (
+	"encoding/json"
+	"io/ioutil"
+	"net/url"
+)
+
+// ParseFile parses the JSON file and stores JSON-encoded data
+// in the value pointed to by v
+func ParseFile(file string, v interface{}) error {
+	data, err := ioutil.ReadFile(file)
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(data, &v)
+}
 
 // IsRequestURL check if the string rawurl, assuming
 // it was received in an HTTP request, is a valid
