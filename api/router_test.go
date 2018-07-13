@@ -68,25 +68,26 @@ func (suite *HTTPTestSuite) TearDownSuite() {
 	suite.router = nil
 	suite.sids = nil
 }
+
 func (suite *HTTPTestSuite) TestGet() {
 	// load testcases from json file
 	path := filepath.Join("urlshorten/test-fixtures", "router_testcases.json")
-	cases := []TestResponse{}
-	err := urlsh.ParseFile(path, &cases)
+	tcases := []TestResponse{}
 
+	err := urlsh.ParseFile(path, &tcases)
 	if err != nil {
 		suite.T().Error(err)
 	}
 
-	for _, tc := range cases {
+	for _, tc := range tcases {
 		var req *http.Request
-		w := httptest.NewRecorder()
-
 		if tc.TCID == 3 && len(suite.sids) > 0 { // this TestCase represents the successful response
 			req, _ = http.NewRequest("GET", tc.TestCase+suite.sids[0], nil)
 		} else {
 			req, _ = http.NewRequest("GET", tc.TestCase, nil)
 		}
+
+		w := httptest.NewRecorder()
 		suite.router.ServeHTTP(w, req)
 
 		if w.Code != 200 {
@@ -94,6 +95,7 @@ func (suite *HTTPTestSuite) TestGet() {
 			if err := json.Unmarshal(w.Body.Bytes(), &errResp); err != nil {
 				suite.T().Fatal(err)
 			}
+
 			assert.Equal(suite.T(), tc.Expected["status"], errResp["status"])
 			assert.Equal(suite.T(), tc.Expected["message"], errResp["message"])
 		} else {
@@ -101,13 +103,13 @@ func (suite *HTTPTestSuite) TestGet() {
 			if err := json.Unmarshal(w.Body.Bytes(), &successResp); err != nil {
 				suite.T().Fatal(err)
 			}
+
 			if len(suite.sids) > 0 {
 				assert.Equal(suite.T(), 200, w.Code)
 				assert.Equal(suite.T(), "http://192.168.99.100:8080/"+suite.sids[0], successResp["data"].ShortURL)
 				assert.True(suite.T(), successResp["data"].ID.Valid())
 			}
 		}
-
 	}
 }
 
