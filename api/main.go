@@ -52,16 +52,16 @@ func main() {
 
 	DB := db.NewMongoDB(sess)
 	ucs := usecase.NewURLShortenUsecase(DB)
-	h := httphandler.NewHTTPURLShortenHandler(ucs)
+	handler := httphandler.NewHTTPURLShortenHandler(ucs)
 
-	// HTTP Web server handler
-	router := setupRouter(h)
-	s := &http.Server{
+	// HTTP Web server
+	router := setupRouter(handler)
+	srv := &http.Server{
 		Addr:           ":8080",
 		Handler:        router,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
-	s.ListenAndServe() // listen and serve on 0.0.0.0:8080
+	srv.ListenAndServe() // listen and serve on 0.0.0.0:8080
 }
