@@ -20,7 +20,6 @@ type HTTPURLShortenHandler struct {
 // Get method gets information for a specified short URL
 func (h *HTTPURLShortenHandler) Get(c *gin.Context) {
 	qValue, ok := c.GetQuery("shortUrl")
-
 	if !ok {
 		e := NewAPIError(400, CodeMissingParam, errors.New("Missing 'shortUrl' query parameter"))
 		c.JSON(e.Status, e)
@@ -62,6 +61,7 @@ func (h *HTTPURLShortenHandler) Insert(c *gin.Context) {
 			c.JSON(e.Status, e)
 			return
 		}
+
 		e := NewAPIError(400, CodeInvalidParam, fmt.Errorf(err.Error()))
 		c.JSON(e.Status, e)
 		return
