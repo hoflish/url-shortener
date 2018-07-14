@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/hoflish/url-shortener/api/urlshorten/db"
-	"github.com/hoflish/url-shortener/api/urlshorten/delivery/http"
+	httphandler "github.com/hoflish/url-shortener/api/urlshorten/delivery/http"
 	"github.com/hoflish/url-shortener/api/urlshorten/usecase"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/mgo.v2"
@@ -55,7 +55,7 @@ func main() {
 	handler := httphandler.NewHTTPURLShortenHandler(ucs)
 
 	// HTTP Web server
-	router := setupRouter(handler)
+	router := SetupRouter(handler)
 	srv := &http.Server{
 		Addr:           ":8080",
 		Handler:        router,

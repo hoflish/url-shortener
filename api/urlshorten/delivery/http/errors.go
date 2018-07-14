@@ -60,10 +60,16 @@ func NewAPIError(status int, code string, err error) *APIError {
 func IsDBError(err error) bool {
 	switch e := err.(type) {
 	case *mgo.QueryError:
-		logrus.Error("DB: QueryError: %v, code: %d", e.Message, e.Code)
+		logrus.WithFields(logrus.Fields{
+			"msg":  e.Message,
+			"code": e.Code,
+		}).Error("MongoDB: QueryError")
 		return true
 	case *mgo.LastError:
-		logrus.Error("DB: LastError: %v, code: %d", e.Err, e.Code)
+		logrus.WithFields(logrus.Fields{
+			"msg":  e.Err,
+			"code": e.Code,
+		}).Error("MongoDB: LastError")
 		return true
 	}
 	return false
