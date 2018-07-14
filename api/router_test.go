@@ -17,7 +17,7 @@ import (
 	"github.com/hoflish/url-shortener/api/models"
 	urlsh "github.com/hoflish/url-shortener/api/urlshorten"
 	"github.com/hoflish/url-shortener/api/urlshorten/db"
-	"github.com/hoflish/url-shortener/api/urlshorten/delivery/http"
+	httphandler "github.com/hoflish/url-shortener/api/urlshorten/delivery/http"
 	"github.com/hoflish/url-shortener/api/urlshorten/usecase"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -59,7 +59,7 @@ func (suite *HTTPTestSuite) SetupSuite() {
 	usecases := usecase.NewURLShortenUsecase(suite.memDB)
 	handler := httphandler.NewHTTPURLShortenHandler(usecases)
 
-	suite.router = setupRouter(handler)
+	suite.router = SetupRouter(handler)
 	suite.FeedMemDB()
 }
 

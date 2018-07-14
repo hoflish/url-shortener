@@ -9,8 +9,8 @@ RUN go get -u github.com/golang/dep/cmd/dep
 WORKDIR /go/src/github.com/hoflish/url-shortener/api
 
 # add Gopkg.toml and Gopkg.lock
-COPY Gopkg.toml ./
-COPY Gopkg.lock ./
+COPY api/Gopkg.toml .
+COPY api/Gopkg.lock .
 
 # install packages
 # --vendor-only is used to restrict dep from scanning source code
@@ -18,10 +18,10 @@ COPY Gopkg.lock ./
 RUN dep ensure --vendor-only
 
 # copy source code
-COPY . .
+COPY api/ .
 
 # build the source
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main main.go router.go
 
 # use a minimal alpine image
 FROM alpine:latest
@@ -37,6 +37,6 @@ WORKDIR /app
 
 # copy the binary from builder
 COPY --from=builder /go/src/github.com/hoflish/url-shortener/api/main .
-
+COPY --from=builder /go/src/github.com/hoflish/url-shortener/api/log .
 # run the binary
 CMD ["./main"]
