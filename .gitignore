@@ -5,6 +5,7 @@
 !.vscode/extensions.json                                                  
 debug                                                                     
 
+# Dependency management
 **/vendor/*
 !vendor/vendor.json
 
@@ -20,3 +21,7 @@ debug
                                                                           
 # Output of the go coverage tool, specifically when used with LiteIDE     
 *.out                                                                     
+
+# Log files
+*.log 
+**/log/
