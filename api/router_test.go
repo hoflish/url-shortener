@@ -96,8 +96,8 @@ func (suite *HTTPTestSuite) TestGet() {
 				suite.T().Fatal(err)
 			}
 
-			assert.Equal(suite.T(), tc.Expected["status"], errResp["status"])
-			assert.Equal(suite.T(), tc.Expected["message"], errResp["message"])
+			assertEqualWithColors(suite, tc.TCID, tc.TestCase, tc.Expected["status"], errResp["status"])
+			assertEqualWithColors(suite, tc.TCID, tc.TestCase, tc.Expected["message"], errResp["message"])
 		} else {
 			var successResp map[string]models.URLShorten
 			if err := json.Unmarshal(w.Body.Bytes(), &successResp); err != nil {

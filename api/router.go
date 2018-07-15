@@ -12,9 +12,11 @@ import (
 
 // SetupRouter returns a framework's instance
 func SetupRouter(h *httphandler.HTTPURLShortenHandler) *gin.Engine {
-	env := os.Getenv("APP_ENVIRONMENT")
+	router := gin.New()
 
-	if env == "production" {
+	env := os.Getenv("APP_ENVIRONMENT")
+	switch env {
+	case "production":
 		file, err := os.OpenFile("log/logrus.log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0755)
 		if err == nil {
 			logrus.SetOutput(file)
@@ -24,20 +26,23 @@ func SetupRouter(h *httphandler.HTTPURLShortenHandler) *gin.Engine {
 		} else {
 			logrus.Info("Failed to log to file, using default stderr")
 		}
-
+		// gin mode
 		gin.SetMode(gin.ReleaseMode)
+		// ginrus middleware
+		router.Use(ginrus.Ginrus(logrus.StandardLogger(), time.RFC3339, true))
+
+	case "testing":
+		gin.SetMode(gin.TestMode)
+
+	default:
+		gin.SetMode(gin.DebugMode)
+		router.Use(ginrus.Ginrus(logrus.StandardLogger(), time.RFC3339, true))
 	}
 
-	r := gin.New()
-
-	// ginrus middleware, which:
-	r.Use(ginrus.Ginrus(logrus.StandardLogger(), time.RFC3339, true))
-
-	v1 := r.Group("api/v1")
+	v1 := router.Group("api/v1")
 	{
 		v1.GET("/url", h.Get)
 		v1.POST("/url", h.Insert)
 	}
-
-	return r
+	return router
 }
