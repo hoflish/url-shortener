@@ -84,7 +84,7 @@ func (h *HTTPURLShortenHandler) Insert(c *gin.Context) {
 		return
 	}
 
-	jsonData(c, http.StatusOK, res)
+	jsonData(c, http.StatusCreated, res)
 }
 
 // NewHTTPURLShortenHandler defines API endpoints

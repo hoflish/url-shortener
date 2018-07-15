@@ -124,7 +124,7 @@ func (suite *HTTPTestSuite) TestInsert() {
 	w := httptest.NewRecorder()
 	suite.router.ServeHTTP(w, req)
 
-	assert.Equal(suite.T(), 200, w.Code)
+	assert.Equal(suite.T(), 201, w.Code)
 	assert.Equal(suite.T(), suite.memDB.Size(), 2) // now, memoryDB has 2 records
 
 }
