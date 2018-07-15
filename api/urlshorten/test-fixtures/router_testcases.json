@@ -1,7 +1,7 @@
 [
   {
     "TCID": 0,
-    "TestCase": "/api/url",
+    "TestCase": "/api/v1/url",
     "Expected": {
       "message": "Missing 'shortUrl' query parameter",
       "status": 400
@@ -9,7 +9,7 @@
   },
   {
     "TCID": 1,
-    "TestCase": "/api/url?shortUrl=",
+    "TestCase": "/api/v1/url?shortUrl=",
     "Expected": {
       "message": "Invalid shortUrl: ",
       "status": 422
@@ -17,7 +17,7 @@
   },
   {
     "TCID": 2,
-    "TestCase": "/api/url?shortUrl=http://192.168.99.100:8080/a7E-m19Lk",
+    "TestCase": "/api/v1/url?shortUrl=http://192.168.99.100:8080/a7E-m19Lk",
     "Expected": {
       "message": "Resource not found",
       "status": 404
@@ -25,7 +25,7 @@
   },
   {
     "TCID": 3,
-    "TestCase": "/api/url?shortUrl=http://192.168.99.100:8080/",
+    "TestCase": "/api/v1/url?shortUrl=http://192.168.99.100:8080/",
     "Expected": {}
   }
 ]
