@@ -117,14 +117,14 @@ func (suite *HTTPTestSuite) TestInsert() {
 	form := url.Values{}
 	form.Add("longUrl", "http://example.com/")
 
-	req, _ := http.NewRequest("POST", "/api/url", strings.NewReader(form.Encode()))
+	req, _ := http.NewRequest("POST", "/api/v1/url", strings.NewReader(form.Encode()))
 	req.PostForm = form
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	w := httptest.NewRecorder()
 	suite.router.ServeHTTP(w, req)
 
-	assert.Equal(suite.T(), 200, w.Code)
+	assert.Equal(suite.T(), 201, w.Code)
 	assert.Equal(suite.T(), suite.memDB.Size(), 2) // now, memoryDB has 2 records
 
 }

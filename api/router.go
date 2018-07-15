@@ -33,8 +33,11 @@ func SetupRouter(h *httphandler.HTTPURLShortenHandler) *gin.Engine {
 	// ginrus middleware, which:
 	r.Use(ginrus.Ginrus(logrus.StandardLogger(), time.RFC3339, true))
 
-	r.GET("/api/url", h.Get)
-	r.POST("/api/url", h.Insert)
+	v1 := r.Group("api/v1")
+	{
+		v1.GET("/url", h.Get)
+		v1.POST("/url", h.Insert)
+	}
 
 	return r
 }
