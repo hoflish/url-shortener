@@ -139,3 +139,7 @@ type TestResponse struct {
 	TestCase string
 	Expected map[string]interface{}
 }
+
+func assertEqualWithColors(s *HTTPTestSuite, tcid int, tc, expected, actual interface{}) {
+	assert.Equalf(s.T(), expected, actual, "\n\033[36mTCID\033[0m: %#v \t \033[34mTC\033[0m: \033[35m%#v\033[0m\n\n\033[31m- Expected: %#v \n\033[32m+ Actual: %#v\033[0m \n\n", tcid, tc, expected, actual)
+}
