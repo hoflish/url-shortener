@@ -19,7 +19,7 @@ func NewMongoDB(Sess *mgo.Session) dal.DataAccessLayer {
 
 // Fetch method gets a specified Url Resource
 func (db *mongoDB) Fetch(ctx *gin.Context, shortURL string) (*models.URLShorten, error) {
-	s := db.Sess.Copy()
+	s := db.Sess.Clone()
 	defer s.Close()
 
 	result := models.URLShorten{}
@@ -31,7 +31,7 @@ func (db *mongoDB) Fetch(ctx *gin.Context, shortURL string) (*models.URLShorten,
 
 // Store method stores a new Url Resource
 func (db *mongoDB) Store(ctx *gin.Context, us *models.URLShorten) (*models.URLShorten, error) {
-	s := db.Sess.Copy()
+	s := db.Sess.Clone()
 	defer s.Close()
 
 	if err := db.collection().Insert(us); err != nil {
