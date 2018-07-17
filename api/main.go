@@ -12,18 +12,17 @@ import (
 	"gopkg.in/mgo.v2"
 )
 
-const (
-	defaultHost = "127.0.0.1:27017"
-)
+func dbURL() string {
+	host, port := "192.168.99.100", "27017"
+	if h := os.Getenv("DB_HOST"); h != "" {
+		host = h
+	}
+	return host + ":" + port
+}
 
 func main() {
-	// Setup original DB session
-	host := os.Getenv("DB_HOST")
-	if host == "" {
-		host = defaultHost
-	}
-
-	sess, err := mgo.Dial(host)
+	dbHost := dbURL()
+	sess, err := mgo.Dial(dbHost)
 	if err != nil {
 		logrus.Panicf("Init DB: %v", err)
 	}

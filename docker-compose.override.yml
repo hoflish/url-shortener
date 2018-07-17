@@ -5,7 +5,7 @@ services:
   urlshortener-service:
     environment:
       APP_ENVIRONMENT: "development"
-      DB_HOST: "192.168.99.100:27017"
+      DB_HOST: "192.168.99.100"
     ports:
       - "8080:8080"
     volumes:
