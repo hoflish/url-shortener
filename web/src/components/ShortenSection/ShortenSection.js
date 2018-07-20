@@ -3,11 +3,12 @@
     [✔] # Use ui toast for client errors
     [x] # Add onSend method to send payload to server
           + [✔] handle response (errors)
-          + handle response success data
-          + set timeout/deadline for client
+          + [✔] set timeout/deadline for client
+          + [x] handle response success data
          
     [x] # Disable shorten button when process
-    [x] # 
+    [x] # TODO:(hoflish): log to a logging service instead of console ??
+
 */
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -53,21 +54,45 @@ class ShortenSection extends React.Component {
     API.post('url', qs.stringify({ longUrl: l }))
       .then(response => {
         // TODO: show response short URL in a modal with copy feature
+        // Success
         console.log(response);
       })
-      .catch(err => {
-        const { status } = err.response;
-        switch (status) {
-          case 400:
-          case 422:
-            this.notifyErrors(UX.original_url_invalid);
-            break;
-          case 500:
-            this.notifyErrors(UX.error_internal_server);
-            break;
-          default:
-            this.notifyErrors(err.response.data && err.response.data.message);
+      .catch(error => {
+        // Error
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          const { status } = error.response;
+          const { message } = error.response.data;
+          switch (status) {
+            case 400:
+              this.notifyErrors(UX.original_url_invalid);
+              break;
+            case 422:
+              this.notifyErrors(message);
+              break;
+            case 500:
+              // log this error
+              this.notifyErrors(UX.error_internal_server);
+              break;
+            default:
+              this.notifyErrors(message);
+          }
+        } else if (error.request) {
+          // The request was made but no response was received
+          const req = error.request;
+          if (req.readyState === 4 && req.status === 0) {
+            this.notifyErrors(UX.error_unexpected);
+          }
+          console.log(req.message);
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          if (error.code === 'ECONNABORTED') {
+            this.notifyErrors(UX.error_request_timeout);
+          }
+          console.log('Error', error.message);
         }
+        console.log(error.config);
       });
   }
 
