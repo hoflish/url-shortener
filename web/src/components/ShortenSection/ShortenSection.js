@@ -2,8 +2,10 @@
     [✔] # Validate user input - Original URL
     [✔] # Use ui toast for client errors
     [x] # Add onSend method to send payload to server
+          + [✔] handle response (errors)
+          + handle response success data
           + set timeout/deadline for client
-          + handle response (errors or data)
+         
     [x] # Disable shorten button when process
     [x] # 
 */
@@ -12,8 +14,10 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import { ToastContainer, toast } from 'react-toastify';
-import axios from 'axios';
+import qs from 'qs';
 import { isWebURL } from '../../is_web_url';
+import API from '../../api';
+import { ValidationError, InternalServerError } from '../../errors';
 import InputField from '../InputField/InputField';
 import 'react-toastify/dist/ReactToastify.css';
 import './ShortenSection.css';
@@ -32,9 +36,9 @@ class ShortenSection extends React.Component {
     super(props);
     this.state = { longURL: '' };
     this.toastId = null;
-    this.notify = () => {
+    this.notifyErrors = err => {
       if (!toast.isActive(this.toastId)) {
-        this.toastId = toast.error('Unable to create short URL', {
+        this.toastId = toast.error(err, {
           autoClose: 4000,
           className: 'custom-toast',
         });
@@ -44,27 +48,31 @@ class ShortenSection extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  onSend(l) {
+  async onSend(l) {
     const self = this;
-    const form = new FormData();
-    form.append('longUrl', l);
-    axios
-      .post('http://192.168.99.100:8080/api/v1/url', form)
+    API.post('url', qs.stringify({ longUrl: l }))
       .then(response => {
+        // TODO: show response short URL in a modal with copy feature
         console.log(response);
       })
-      .catch(error => {
-        console.log(error);
+      .catch(err => {
+        const { status } = err.response;
+        switch (status) {
+          case 400:
+          case 422:
+            this.notifyErrors(ValidationError);
+            break;
+          case 500:
+            this.notifyErrors(InternalServerError);
+            break;
+          default:
+            this.notifyErrors(err.response.data && err.response.data.message);
+        }
       });
   }
 
   handleChange(event) {
-    const currentState = { longURL: event.target.value };
-    const { hasError } = this.state;
-    if (hasError) {
-      currentState.hasError = undefined;
-    }
-    this.setState(currentState);
+    this.setState({ longURL: event.target.value });
   }
 
   handleSubmit(event) {
@@ -73,10 +81,9 @@ class ShortenSection extends React.Component {
     if (l === '') return;
 
     if (!isWebURL.test(l)) {
-      this.notify();
+      this.notifyErrors(ValidationError);
       return;
     }
-    // trigger onSend method
     this.onSend(l);
   }
 
