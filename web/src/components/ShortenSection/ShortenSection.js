@@ -15,9 +15,9 @@ import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import { ToastContainer, toast } from 'react-toastify';
 import qs from 'qs';
-import { isWebURL } from '../../is_web_url';
+import { isWebURL } from '../../isWebURL';
 import API from '../../api';
-import { ValidationError, InternalServerError } from '../../errors';
+import { UXMessages as UX } from '../../UXMessages';
 import InputField from '../InputField/InputField';
 import 'react-toastify/dist/ReactToastify.css';
 import './ShortenSection.css';
@@ -60,10 +60,10 @@ class ShortenSection extends React.Component {
         switch (status) {
           case 400:
           case 422:
-            this.notifyErrors(ValidationError);
+            this.notifyErrors(UX.original_url_invalid);
             break;
           case 500:
-            this.notifyErrors(InternalServerError);
+            this.notifyErrors(UX.error_internal_server);
             break;
           default:
             this.notifyErrors(err.response.data && err.response.data.message);
@@ -81,7 +81,7 @@ class ShortenSection extends React.Component {
     if (l === '') return;
 
     if (!isWebURL.test(l)) {
-      this.notifyErrors(ValidationError);
+      this.notifyErrors(UX.original_url_invalid);
       return;
     }
     this.onSend(l);
