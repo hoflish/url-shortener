@@ -1,0 +1,16 @@
+#shortUrl {
+  width: 250px;
+  vertical-align: middle;
+  padding: 10px 16px;
+  outline: none;
+  overflow: hidden;
+  border-radius: 2px;
+  font-size: 14px;
+  background-color: #eee;
+  border: 0;
+  margin-right: 8px;
+}
+
+.clipboardIcon {
+  padding: 0
+}

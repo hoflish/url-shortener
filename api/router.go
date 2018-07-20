@@ -4,6 +4,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/contrib/ginrus"
 	"github.com/gin-gonic/gin"
 	"github.com/hoflish/url-shortener/api/urlshorten/delivery/http"
@@ -38,6 +39,29 @@ func SetupRouter(h *httphandler.HTTPURLShortenHandler) *gin.Engine {
 		gin.SetMode(gin.DebugMode)
 		router.Use(ginrus.Ginrus(logrus.StandardLogger(), time.RFC3339, true))
 	}
+
+	// CORS for http://localhost:3000 origin, allowing:
+	// - POST, PUT and PATCH methods
+	// - Origin header
+	// - Credentials share
+	// - Preflight requests cached for 12 hours
+	router.Use(cors.New(cors.Config{
+		AllowOrigins: []string{"http://localhost:3000"},
+		AllowMethods: []string{"GET", "POST", "PUT", "OPTIONS"},
+		AllowHeaders: []string{
+			"Origin",
+			"Content-Length",
+			"Content-Type",
+			"Accept",
+			"X-Requested-With",
+		},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		/*AllowOriginFunc: func(origin string) bool {
+			return origin == "https://example.com"
+		},*/
+		MaxAge: 12 * time.Hour,
+	}))
 
 	v1 := router.Group("api/v1")
 	{
