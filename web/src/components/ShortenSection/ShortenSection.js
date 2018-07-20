@@ -53,8 +53,6 @@ class ShortenSection extends React.Component {
   }
 
   onSend(l) {
-    const self = this;
-
     API.post('url', qs.stringify({ longUrl: l }))
       .then(response => {
         // TODO: show response short URL in a modal with copy feature
@@ -134,9 +132,6 @@ class ShortenSection extends React.Component {
     const { open, shortURL } = this.state;
     return (
       <section className="shorten section">
-        <div>
-          <ToastContainer hideProgressBar className="toast-container" />
-        </div>
         <div className="container">
           <h1>Simplify your links</h1>
           <div className="input-container">
@@ -148,6 +143,7 @@ class ShortenSection extends React.Component {
             </form>
           </div>
         </div>
+        <ToastContainer hideProgressBar className="toast-container" />
         <AlertDialog open={open} shorturl={shortURL} onClose={this.handleClose} />
       </section>
     );

@@ -5,5 +5,6 @@ export const UXMessages = {
   error_request_timeout:
     'Looks like the server is taking to long to respond, please try again in sometime',
   action_shorturl_created: 'Your short URL',
+  action_copy_to_clipboard: 'Copied to clipboard',
   done: 'DONE',
 };
