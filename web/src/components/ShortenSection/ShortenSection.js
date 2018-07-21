@@ -9,6 +9,7 @@
     [x] # Disable shorten button when process
           + [x] Use bluebird.js for more control of Promise
     [x] # log to a logging service instead of console ??
+    [x] # Add remove button to clean input field
 */
 import React from 'react';
 import PropTypes from 'prop-types';
