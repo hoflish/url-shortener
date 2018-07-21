@@ -1,6 +1,23 @@
 * text=auto
-*.sh text eol=lf
-*.go text eol=lf
-*.exe binary
-vendor/** -text
 
+*.bat           text eol=crlf
+*.sh            text eol=lf
+
+vendor/**       -text
+
+# Documents
+*.doc           diff=astextplain
+*.DOC           diff=astextplain
+*.docx          diff=astextplain
+*.DOCX          diff=astextplain
+*.pdf           diff=astextplain
+*.PDF           diff=astextplain
+
+# Graphics
+*.png           binary
+*.jpg           binary
+*.jpeg          binary
+*.gif           binary
+*.ico           binary
+*.svg           binary
+*.exe           binary
