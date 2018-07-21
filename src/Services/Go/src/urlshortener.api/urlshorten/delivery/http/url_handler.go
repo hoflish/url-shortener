@@ -9,8 +9,8 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"github.com/sirupsen/logrus"
 
-	"github.com/hoflish/url-shortener/api/models"
-	urlsh "github.com/hoflish/url-shortener/api/urlshorten"
+	"urlshortener.api/models"
+	urlsh "urlshortener.api/urlshorten"
 )
 
 type HTTPURLShortenHandler struct {

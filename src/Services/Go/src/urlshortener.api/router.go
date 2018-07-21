@@ -7,8 +7,9 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/contrib/ginrus"
 	"github.com/gin-gonic/gin"
-	"github.com/hoflish/url-shortener/api/urlshorten/delivery/http"
 	"github.com/sirupsen/logrus"
+
+	"urlshortener.api/urlshorten/delivery/http"
 )
 
 // SetupRouter returns a framework's instance

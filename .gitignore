@@ -8,6 +8,10 @@ debug
 
 # Dependency management for Go
 **/vendor/*
+**/pkg/*
+**/bin/*
+src/Services/Go/*
+!src/Srvices/src/urlshortener.api
 !vendor/vendor.json
 
 # Binaries for programs and plugins                                       

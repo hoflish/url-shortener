@@ -1,8 +1,8 @@
 package urlshorten
 
 import (
+	"urlshortener.api/models"
 	"github.com/gin-gonic/gin"
-	"github.com/hoflish/url-shortener/api/models"
 )
 
 // URLShortenUsecase defines methods which handle business process

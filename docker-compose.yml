@@ -5,7 +5,7 @@ services:
   urlshortener-service:
     build: 
       context: .
-      dockerfile: api/Dockerfile
+      dockerfile: src/Services/Go/src/urlshortener.api/Dockerfile
     depends_on: 
       - datastore
 

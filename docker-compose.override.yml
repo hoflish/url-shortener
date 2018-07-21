@@ -8,9 +8,7 @@ services:
       DB_HOST: "192.168.99.100"
     ports:
       - "8080:8080"
-    volumes:
-      - ./api/log:/app/log
-
+      
   datastore:
     ports:
       - 27017:27017

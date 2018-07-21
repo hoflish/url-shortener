@@ -5,9 +5,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/hoflish/url-shortener/api/urlshorten/db"
-	httphandler "github.com/hoflish/url-shortener/api/urlshorten/delivery/http"
-	"github.com/hoflish/url-shortener/api/urlshorten/usecase"
+	"urlshortener.api/urlshorten/db"
+	httphandler "urlshortener.api/urlshorten/delivery/http"
+	"urlshortener.api/urlshorten/usecase"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/mgo.v2"
 )

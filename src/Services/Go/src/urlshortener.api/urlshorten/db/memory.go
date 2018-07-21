@@ -3,11 +3,11 @@ package db
 import (
 	"sync"
 
+	"urlshortener.api/models"
 	"github.com/gin-gonic/gin"
-	"github.com/hoflish/url-shortener/api/models"
 
-	dal "github.com/hoflish/url-shortener/api/urlshorten"
-	"github.com/hoflish/url-shortener/api/urlshorten/delivery/http"
+	dal "urlshortener.api/urlshorten"
+	"urlshortener.api/urlshorten/delivery/http"
 )
 
 // Ensure MemoryDB conforms to DataAccessLayer interface.

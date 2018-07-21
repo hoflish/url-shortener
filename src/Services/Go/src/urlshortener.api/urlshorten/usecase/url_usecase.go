@@ -5,9 +5,9 @@ import (
 
 	"gopkg.in/mgo.v2/bson"
 
+	"urlshortener.api/models"
+	dal "urlshortener.api/urlshorten"
 	"github.com/gin-gonic/gin"
-	"github.com/hoflish/url-shortener/api/models"
-	dal "github.com/hoflish/url-shortener/api/urlshorten"
 	"github.com/teris-io/shortid"
 )
 

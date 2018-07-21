@@ -16,11 +16,11 @@ RUN xz -d -c /usr/local/upx-3.94-amd64_linux.tar.xz | \
 RUN go get github.com/golang/dep/cmd/dep
 
 # setup the working directory
-WORKDIR /go/src/github.com/hoflish/url-shortener/api
+WORKDIR /go/src/urlshortener.api
 
 # add Gopkg.toml and Gopkg.lock
-COPY api/Gopkg.toml .
-COPY api/Gopkg.lock .
+COPY src/Services/Go/src/urlshortener.api/Gopkg.toml .
+COPY src/Services/Go/src/urlshortener.api/Gopkg.lock .
 
 # install packages
 # --vendor-only is used to restrict dep from scanning source code
@@ -28,10 +28,11 @@ COPY api/Gopkg.lock .
 RUN dep ensure --vendor-only
 
 # copy source code
-COPY api/ .
+COPY src/Services/Go/src/urlshortener.api .
 
 # build the source
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main main.go router.go
+
 # strip and compress the binary
 RUN strip --strip-unneeded main
 RUN upx main
@@ -46,7 +47,7 @@ FROM scratch
 WORKDIR /app
 
 # copy the binary from builder
-COPY --from=builder /go/src/github.com/hoflish/url-shortener/api/main .
-COPY --from=builder /go/src/github.com/hoflish/url-shortener/api/log .
+COPY --from=builder /go/src/urlshortener.api/main .
+
 # run the binary
 CMD ["./main"]

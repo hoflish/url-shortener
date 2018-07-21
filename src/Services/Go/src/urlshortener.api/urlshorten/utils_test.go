@@ -4,7 +4,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	urlsh "github.com/hoflish/url-shortener/api/urlshorten"
+	urlsh "urlshortener.api/urlshorten"
 )
 
 type TC struct {

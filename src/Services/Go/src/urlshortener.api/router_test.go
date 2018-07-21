@@ -14,11 +14,11 @@ import (
 	"github.com/teris-io/shortid"
 	"gopkg.in/mgo.v2/bson"
 
-	"github.com/hoflish/url-shortener/api/models"
-	urlsh "github.com/hoflish/url-shortener/api/urlshorten"
-	"github.com/hoflish/url-shortener/api/urlshorten/db"
-	httphandler "github.com/hoflish/url-shortener/api/urlshorten/delivery/http"
-	"github.com/hoflish/url-shortener/api/urlshorten/usecase"
+	"urlshortener.api/models"
+	urlsh "urlshortener.api/urlshorten"
+	"urlshortener.api/urlshorten/db"
+	httphandler "urlshortener.api/urlshorten/delivery/http"
+	"urlshortener.api/urlshorten/usecase"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
