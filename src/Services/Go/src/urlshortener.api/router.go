@@ -58,9 +58,6 @@ func SetupRouter(h *httphandler.HTTPURLShortenHandler) *gin.Engine {
 		},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
-		/*AllowOriginFunc: func(origin string) bool {
-			return origin == "https://example.com"
-		},*/
 		MaxAge: 12 * time.Hour,
 	}))
 

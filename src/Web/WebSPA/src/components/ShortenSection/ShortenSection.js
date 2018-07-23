@@ -53,7 +53,11 @@ class ShortenSection extends React.Component {
   }
 
   onSend(l) {
-    API.post('url', qs.stringify({ longUrl: l }))
+    API.post('url', qs.stringify({ longUrl: l }), {
+      headers: {
+        'content-type': 'application/x-www-form-urlencoded',
+      },
+    })
       .then(response => {
         // Success
         const res = response.data;
