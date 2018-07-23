@@ -64,34 +64,18 @@ class ShortenSection extends React.Component {
       .catch(error => {
         // Error
         if (error.response) {
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
-          // Note: validation errors are rarely reached because of the client-side validation
           const { status } = error.response;
-          const { message } = error.response.data;
           switch (status) {
             case 400:
+            case 422:
               this.notifyErrors(UX.original_url_invalid);
               break;
-            case 422:
-              this.notifyErrors(message);
-              break;
-            case 500:
-              // log this error
-              this.notifyErrors(UX.error_internal_server);
-              break;
             default:
-              this.notifyErrors(message);
+              this.notifyErrors(UX.error_internal_server);
           }
         } else if (error.request) {
-          // The request was made but no response was received
-          const req = error.request;
-          if (req.readyState === 4 && req.status === 0) {
-            this.notifyErrors(UX.error_unexpected);
-          }
-          console.log(req.message);
+          this.notifyErrors(UX.error_internal_server);
         } else {
-          // Something happened in setting up the request that triggered an Error
           if (error.code === 'ECONNABORTED') {
             this.notifyErrors(UX.error_request_timeout);
           }
