@@ -39,12 +39,16 @@ app.get('/:sid', async (req, res, next) => {
         if (status === 404) {
           res.status(404).render('404', { url, title: '404 | Page Not Found' });
         }
-      } else if (error.code === 'ECONNABORTED') {
-        // The request was made but no response was received
-        console.log('TIMEOUT: ', error.message);
+      } else if (error.request) {
+        res
+          .status(503)
+          .send('503 Service Unavailable Error')
+          .end();
       } else {
-        // Something happened in setting up the request that triggered an Error
-        console.log('Request', error.request);
+        res
+          .status(500)
+          .send('Oops! something went wrong')
+          .end();
       }
     });
 });
