@@ -1,5 +1,3 @@
-// process.env.BABEL_ENV = 'production';
-
 require('ignore-styles');
 
 require('babel-register')({
