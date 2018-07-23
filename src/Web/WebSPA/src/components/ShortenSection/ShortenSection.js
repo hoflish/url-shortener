@@ -23,7 +23,6 @@ import { UXMessages as UX } from '../../UXMessages';
 import InputField from '../InputField/InputField';
 import AlertDialog from '../AlertDialog/AlertDialog';
 import 'react-toastify/dist/ReactToastify.css';
-import './ShortenSection.css';
 
 const styles = theme => ({
   button: {
