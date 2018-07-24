@@ -12,7 +12,7 @@ import (
 )
 
 // TODO: refactor this code,
-const shortBaseURL = "http://localhost:5000/"
+const shortBaseURL = "http://localhost:3000/"
 
 type URLShortenUsecase struct {
 	DB dal.DataAccessLayer
