@@ -357,3 +357,7 @@ p {
   margin: 0 auto;
   text-align: center;
 }
+
+.error-box p {
+  font-size: 20px;
+}
