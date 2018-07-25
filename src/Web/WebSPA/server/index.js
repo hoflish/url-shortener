@@ -1,5 +1,6 @@
 import express from 'express';
 import path from 'path';
+import API from '../src/api';
 import serverRenderer from './middleware/renderer';
 
 const PORT = 5000;
@@ -41,7 +42,6 @@ app.get('/:sid', async (req, res, next) => {
             res.status(status).render('error', {
               message: `404 Not Found - the page ${url} does not exist.`,
             });
-
           } else {
             res.status(status).render('error', {
               message,
