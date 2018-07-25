@@ -1,0 +1,363 @@
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+u,
+i,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+  outline: none;
+}
+
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
+
+html {
+  font-family: Roboto, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.25;
+  color: #828287;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+ol,
+ul {
+  list-style: none;
+}
+
+blockquote,
+q {
+  quotes: none;
+}
+
+blockquote:before,
+blockquote:after {
+  content: '';
+  content: none;
+}
+
+q:before,
+q:after {
+  content: '';
+  content: none
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+em {
+  font-style: italic;
+}
+
+code {
+  font-family: Consolas, monospace
+}
+
+input {
+  margin: 0;
+  font-family: 'Source Sans Pro', sans-serif;
+}
+
+button {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  background: none;
+  outline: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+input[type="reset"],
+input[type="submit"],
+html input[type="button"],
+button {
+  cursor: pointer;
+  -webkit-appearance: button;
+}
+
+input[type="reset"][disabled],
+input[type="submit"][disabled],
+html input[type="button"][disabled],
+button[disabled] {
+  cursor: default;
+}
+
+input[type="search"] {
+  -webkit-appearance: textfield;
+  box-sizing: content-box;
+}
+
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none
+}
+
+input:-webkit-autofill {
+  text-shadow: none;
+}
+
+textarea {
+  vertical-align: top;
+  overflow: auto;
+}
+
+pre {
+  white-space: pre-wrap
+}
+
+ul,
+ol {
+  padding: 0;
+  margin: 0
+}
+
+a {
+  text-decoration: none;
+  color: #4285F4;
+  cursor: pointer;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+svg {
+  display: block;
+  pointer-events: none
+}
+
+* {
+  box-sizing: inherit;
+}
+
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+img,
+embed,
+object,
+audio,
+video {
+  height: auto;
+  max-width: 100%;
+}
+
+td,
+th {
+  padding: 0;
+  text-align: left;
+}
+
+img {
+  max-width: 100%;
+  border: 0;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  vertical-align: baseline;
+}
+
+span {
+  font-style: inherit;
+  font-weight: inherit;
+}
+
+h1 {
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+h2 {
+  font-weight: 700;
+  font-size: 21px;
+  line-height: 1.3
+}
+
+h3 {
+  font-weight: 700;
+  font-size: 17px;
+  line-height: 1.255
+}
+
+h4 {
+  font-weight: 400;
+  font-size: 17px;
+  line-height: 1.255
+}
+
+h5 {
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 19px
+}
+
+h6 {
+  font-weight: 700;
+  font-size: 11px;
+  line-height: 1.465;
+  padding-bottom: 1px
+}
+
+p {
+  padding: 0;
+  margin: 0 0 14px 0
+}
+
+.section {
+  padding: 30px 0 45px;
+  background-color: #3F51B5;
+  -webkit-box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .14), 0 3px 1px -2px rgba(0, 0, 0, .2), 0 1px 5px 0 rgba(0, 0, 0, .12);
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .14), 0 3px 1px -2px rgba(0, 0, 0, .2), 0 1px 5px 0 rgba(0, 0, 0, .12)
+}
+
+.container {
+  margin: 0 auto;
+  padding: 0 24px;
+  max-width: 1070px
+}
+
+.shorten h1 {
+  font-size: 30px;
+  font-weight: lighter;
+  cursor: default;
+  user-select: none;
+  color: #eee;
+}
+
+.input-container form {
+  margin: 10px 0 5px
+}
+
+.toast-container {
+  top: 80px;
+  right: 16px
+}
+
+.custom-toast {
+  font-size: 16px;
+  padding: 12px 14px;
+  border-radius: 2px;
+  min-height: 0
+}
+
+.container .logo {
+  max-width: 1232px;
+}
+
+.logo {
+  display: block;
+  margin-top: 17px;
+  margin-bottom: 14px;
+  font-size: 22px;
+}
+
+.logo a {
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.error-box {
+  padding: 60px 0px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.error-box p {
+  font-size: 20px;
+}

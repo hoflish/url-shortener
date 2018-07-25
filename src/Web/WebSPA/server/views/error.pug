@@ -1,0 +1,15 @@
+doctype html
+html(lang='en')
+  head
+    title #{title}
+    style
+      include ../../media/base.css
+  body
+    block content
+      div(class='container logo') 
+        a(href='/') URL Shortener
+      
+      div(class='main')
+        div(class='container')
+          div(class='error-box')
+            p #{message}

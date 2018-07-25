@@ -73,6 +73,10 @@ h1 {
   min-height: 0
 }
 
+.container .logo {
+  max-width: 1232px;
+}
+
 .logo {
   display: block;
   margin-top: 17px;
@@ -82,4 +86,10 @@ h1 {
 
 .logo a {
   color: rgba(0, 0, 0, 0.87);
+}
+
+.error-box {
+  padding: 60px 0px;
+  margin: 0 auto;
+  text-align: center;
 }
