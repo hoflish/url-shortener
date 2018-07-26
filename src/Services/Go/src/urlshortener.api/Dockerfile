@@ -1,6 +1,6 @@
 # Initialize and name a new build stage,
 # Set the 'golang:1.9.0' image for subsequent instructions
-FROM golang:1.9.0 as builder
+FROM golang:1.9.0 AS builder
 
 RUN apt-get update && apt-get install -y xz-utils \
     && rm -rf /var/lib/apt/lists/*

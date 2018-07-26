@@ -1,18 +1,16 @@
 package usecase
 
 import (
+	"os"
 	"time"
 
 	"gopkg.in/mgo.v2/bson"
 
-	"urlshortener.api/models"
-	dal "urlshortener.api/urlshorten"
 	"github.com/gin-gonic/gin"
 	"github.com/teris-io/shortid"
+	"urlshortener.api/models"
+	dal "urlshortener.api/urlshorten"
 )
-
-// TODO: refactor this code,
-const shortBaseURL = "http://localhost:3000/"
 
 type URLShortenUsecase struct {
 	DB dal.DataAccessLayer
@@ -40,8 +38,11 @@ func (uc *URLShortenUsecase) Store(c *gin.Context, urlsh *models.URLShorten) (*m
 		panic(err)
 	}
 
+	// TODO: Use origin constant instead (e.g. http://example.com)
+	shortBaseURL := os.Getenv("WEB_SPA_ORIGIN")
+
 	urlsh.ID = bson.NewObjectId()
-	urlsh.ShortURL = shortBaseURL + shortID
+	urlsh.ShortURL = shortBaseURL + "/" + shortID
 	urlsh.CreatedAt = time.Now()
 	urlsh.UpdatedAt = time.Now()
 

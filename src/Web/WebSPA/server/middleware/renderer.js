@@ -24,6 +24,8 @@ export default (req, res, next) => {
     );
 
     // inject the rendered app into our html and send it
-    return res.send(htmlData.replace('<div id="root"></div>', `<div id="root">${html}</div>`));
+    return res.send(
+      htmlData.replace('<div id="root"></div>', `<div id="root">${html}</div>`)
+    );
   });
 };

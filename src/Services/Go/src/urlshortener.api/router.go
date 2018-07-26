@@ -41,14 +41,17 @@ func SetupRouter(h *httphandler.HTTPURLShortenHandler) *gin.Engine {
 		router.Use(ginrus.Ginrus(logrus.StandardLogger(), time.RFC3339, true))
 	}
 
-	// CORS for http://localhost:3000 origin, allowing:
+	// CORS for SPA Client origin, allowing:
 	// - POST, PUT and PATCH methods
 	// - Origin header
 	// - Credentials share
 	// - Preflight requests cached for 12 hours
+
+	// TODO: Use origin constant instead (e.g. http://example.com)
+	origin := os.Getenv("WEB_SPA_ORIGIN")
 	router.Use(cors.New(cors.Config{
-		AllowOrigins: []string{"http://localhost:3000"},
-		AllowMethods: []string{"GET", "POST", "PUT", "OPTIONS"},
+		AllowOrigins: []string{origin},
+		AllowMethods: []string{"GET", "POST", "OPTIONS"},
 		AllowHeaders: []string{
 			"Origin",
 			"Content-Length",
@@ -58,7 +61,7 @@ func SetupRouter(h *httphandler.HTTPURLShortenHandler) *gin.Engine {
 		},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
-		MaxAge: 12 * time.Hour,
+		MaxAge:           12 * time.Hour,
 	}))
 
 	v1 := router.Group("api/v1")

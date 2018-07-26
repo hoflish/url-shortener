@@ -118,15 +118,26 @@ class ShortenSection extends React.Component {
           <h1>Simplify your links</h1>
           <div className="input-container">
             <form onSubmit={this.handleSubmit}>
-              <InputField action={this.handleChange} placeholder="Your original URL here" />
-              <Button type="submit" variant="contained" className={classes.button}>
+              <InputField
+                action={this.handleChange}
+                placeholder="Your original URL here"
+              />
+              <Button
+                type="submit"
+                variant="contained"
+                className={classes.button}
+              >
                 Shorten URL
               </Button>
             </form>
           </div>
         </div>
         <ToastContainer hideProgressBar className="toast-container" />
-        <AlertDialog open={open} shorturl={shortURL} onClose={this.handleClose} />
+        <AlertDialog
+          open={open}
+          shorturl={shortURL}
+          onClose={this.handleClose}
+        />
       </section>
     );
   }

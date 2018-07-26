@@ -9,5 +9,10 @@ services:
     depends_on: 
       - datastore
 
+  webspa:
+    build: 
+      context: .
+      dockerfile: src/Web/WebSPA/Dockerfile
+
   datastore:
     image: mongo

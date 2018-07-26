@@ -12,7 +12,11 @@ class App extends Component {
         <div className="main">
           <Switch>
             <Route exact path="/" component={ShortenSection} />
-            <Route component={({ location }) => <NotFound urlPath={location.pathname} />} />
+            <Route
+              component={({ location }) => (
+                <NotFound urlPath={location.pathname} />
+              )}
+            />
           </Switch>
         </div>
       </div>

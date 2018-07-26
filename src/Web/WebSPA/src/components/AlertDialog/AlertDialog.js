@@ -46,7 +46,9 @@ class AlertDialog extends React.Component {
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
-          <DialogTitle id="alert-dialog-title">{UX.action_shorturl_created}</DialogTitle>
+          <DialogTitle id="alert-dialog-title">
+            {UX.action_shorturl_created}
+          </DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
               {/* TODO: STYLE SHORT URL and ADD CREATED MESSAGE */}
@@ -58,7 +60,10 @@ class AlertDialog extends React.Component {
                 readOnly
               />
               <Tooltip title="Copy" placement="top">
-                <Button onClick={this.copyToClipboard} className="clipboardIcon">
+                <Button
+                  onClick={this.copyToClipboard}
+                  className="clipboardIcon"
+                >
                   <ContentCopy />
                 </Button>
               </Tooltip>
