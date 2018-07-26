@@ -5,10 +5,19 @@ services:
   urlshortener-service:
     environment:
       APP_ENVIRONMENT: "development"
-      DB_HOST: "192.168.99.100"
+      DB_HOST: ${EXTERNAL_DNS_NAME_OR_IP}
+      WEB_SPA_ORIGIN: "http://${EXTERNAL_DNS_NAME_OR_IP}"
     ports:
-      - "8080:8080"
-      
+      - "5101:8080"
+  
+  webspa:
+    environment:
+      NODE_ENV: "development"
+      WEB_SPA_ORIGIN: "http://${EXTERNAL_DNS_NAME_OR_IP}"
+      NODE_PORT: "8080"
+    ports:
+      - "80:8080"
+
   datastore:
     ports:
       - 27017:27017

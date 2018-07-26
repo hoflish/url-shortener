@@ -1,5 +1,3 @@
 {
-    "eslint.enable": true,
-    "go.gopath": "C:\\Users\\hassa_000\\Code\\workspace\\projects\\url-shortener\\src\\Services\\Go"
-
+  "go.gopath": "C:\\Users\\hassa_000\\Code\\workspace\\projects\\url-shortener\\src\\Services\\Go"
 }

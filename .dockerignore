@@ -11,3 +11,6 @@ test
 docs
 **/bin/
 **/node_modules/
+**/build/
+.eslint*
+.flowconfig

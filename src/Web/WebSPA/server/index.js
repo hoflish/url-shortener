@@ -3,12 +3,15 @@ import path from 'path';
 import API from '../src/api';
 import serverRenderer from './middleware/renderer';
 
-const PORT = 5000;
-const shortBaseURL = `http://localhost:5000`;
+// TODO: handle prod and dev environments
+const port = process.env.NODE_PORT || 5000
+const shortBaseURL = process.env.WEB_SPA_ORIGIN || `http://localhost:${port}`;
+
 const sidRegex = /^([a-zA-Z0-9_-]){9,12}$/; // carachters that make short id (sid)
 
 const app = express();
-const currentURL = req => `${req.protocol}://${req.get('host')}${req.originalUrl}`;
+const currentURL = req =>
+  `${req.protocol}://${req.get('host')}${req.originalUrl}`;
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -49,7 +52,8 @@ app.get('/:sid', async (req, res, next) => {
           }
         } else {
           res.status(500).render('error', {
-            message: 'Oops! something went wrong, Please try again in sometime.',
+            message:
+              'Oops! something went wrong, Please try again in sometime.',
           });
         }
       });
@@ -75,9 +79,9 @@ app.get('*', (req, res) => {
 });
 
 // start the app
-app.listen(PORT, error => {
+app.listen(port, error => {
   if (error) {
     return console.log('something bad happened', error);
   }
-  console.log(`listening on ${PORT}...`);
+  console.log(`listening on ${port}...`);
 });

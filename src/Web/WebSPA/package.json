@@ -10,8 +10,11 @@
     "babel-preset-react-app": "^3.1.2",
     "babel-register": "^6.26.0",
     "express": "^4.16.3",
+    "husky": "^0.14.3",
     "ignore-styles": "^5.0.1",
+    "lint-staged": "^7.2.0",
     "normalize.css": "^8.0.0",
+    "prettier": "^1.13.7",
     "prop-types": "^15.6.2",
     "pug": "^2.0.3",
     "qs": "^6.5.2",
@@ -22,7 +25,14 @@
     "react-scripts": "1.1.4",
     "react-toastify": "^4.1.0"
   },
+  "lint-staged": {
+    "src,server/**/*.{js,jsx,json,css}": [
+      "prettier --single-quote --trailing-comma es5 --write",
+      "git add"
+    ]
+  },
   "scripts": {
+    "precommit": "lint-staged",
     "dev:server": "cross-env NODE_ENV=production nodemon ./server/bootstrap.js",
     "start:server": "cross-env NODE_ENV=production node ./server/bootstrap.js",
     "start:client": "react-scripts start",
@@ -30,20 +40,11 @@
     "test:client": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "flow": "flow",
-    "lint": "eslint . --cache --cache-location node_modules/.cache/eslint",
-    "lintfix": "eslint . --fix --cache --cache-location node_modules/.cache/eslint"
+    "prettier": "prettier --single-quote --trailing-comma es5 --write \"{src,server}/**/*.js\""
   },
   "devDependencies": {
     "cross-env": "^5.2.0",
-    "eslint": "^4.1.1",
-    "eslint-config-airbnb": "^17.0.0",
-    "eslint-config-prettier": "^2.9.0",
-    "eslint-plugin-import": "^2.13.0",
-    "eslint-plugin-jsx-a11y": "^6.1.1",
-    "eslint-plugin-prettier": "^2.6.2",
-    "eslint-plugin-react": "^7.10.0",
     "flow-bin": "^0.76.0",
-    "nodemon": "^1.18.3",
-    "prettier": "^1.13.7"
+    "nodemon": "^1.18.3"
   }
 }
