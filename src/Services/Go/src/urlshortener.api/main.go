@@ -5,24 +5,19 @@ import (
 	"os"
 	"time"
 
+	"github.com/sirupsen/logrus"
+	"gopkg.in/mgo.v2"
 	"urlshortener.api/urlshorten/db"
 	httphandler "urlshortener.api/urlshorten/delivery/http"
 	"urlshortener.api/urlshorten/usecase"
-	"github.com/sirupsen/logrus"
-	"gopkg.in/mgo.v2"
 )
 
-func dbURL() string {
-	host, port := "192.168.99.100", "27017"
+func main() {
+	host, port := "0.0.0.0", "27017"
 	if h := os.Getenv("DB_HOST"); h != "" {
 		host = h
 	}
-	return host + ":" + port
-}
-
-func main() {
-	dbHost := dbURL()
-	sess, err := mgo.Dial(dbHost)
+	sess, err := mgo.Dial(host + ":" + port)
 	if err != nil {
 		logrus.Panicf("Init DB: %v", err)
 	}

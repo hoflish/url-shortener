@@ -16,17 +16,15 @@ import (
 func SetupRouter(h *httphandler.HTTPURLShortenHandler) *gin.Engine {
 	router := gin.New()
 
-	env := os.Getenv("APP_ENVIRONMENT")
-	switch env {
+	switch env := os.Getenv("APP_ENVIRONMENT"); env {
 	case "production":
-		file, err := os.OpenFile("log/logrus.log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0755)
-		if err == nil {
+		file, err := os.OpenFile("logrus.log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0755)
+		if err != nil {
+			logrus.Info("Failed to log to file, using default stderr")
+		} else {
 			logrus.SetOutput(file)
 			logrus.SetFormatter(&logrus.JSONFormatter{})
 			logrus.SetLevel(logrus.InfoLevel)
-
-		} else {
-			logrus.Info("Failed to log to file, using default stderr")
 		}
 		// gin mode
 		gin.SetMode(gin.ReleaseMode)
@@ -47,16 +45,18 @@ func SetupRouter(h *httphandler.HTTPURLShortenHandler) *gin.Engine {
 	// - Credentials share
 	// - Preflight requests cached for 12 hours
 
-	// TODO: Use origin constant instead (e.g. http://example.com)
 	origin := os.Getenv("WEB_SPA_ORIGIN")
+	if origin == "" {
+		origin = "http://0.0.0.0" // TODO: grab origin from config
+	}
 	router.Use(cors.New(cors.Config{
 		AllowOrigins: []string{origin},
 		AllowMethods: []string{"GET", "POST", "OPTIONS"},
 		AllowHeaders: []string{
-			"Origin",
+			"Accept",
 			"Content-Length",
 			"Content-Type",
-			"Accept",
+			"Origin",
 			"X-Requested-With",
 		},
 		ExposeHeaders:    []string{"Content-Length"},
