@@ -6,13 +6,20 @@
 !.vscode/extensions.json                                                  
 debug 
 
-# Dependency management for Go
+# Golang
 **/vendor/*
-**/pkg/*
-**/bin/*
-src/Services/Go/*
-!src/Srvices/src/urlshortener.api
-!vendor/vendor.json
+src/Services/Go/bin
+src/Services/Go/pkg
+
+# Go source code hosting services
+# IMPORTANT:
+# Check '[project_root]/src/Services/Go/src' path whenever you install a new Go package
+# to ignore other hosting services            
+src/Services/Go/src/github.com
+src/Services/Go/src/golang.org
+# our Go project
+!src/Services/Go/src/urlshortener.api
+
 
 # Binaries for programs and plugins                                       
 *.exe                                                                     
