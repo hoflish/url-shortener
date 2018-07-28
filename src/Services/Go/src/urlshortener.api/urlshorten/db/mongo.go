@@ -1,11 +1,11 @@
 package db
 
 import (
-	"urlshortener.api/models"
-	dal "urlshortener.api/urlshorten"
 	"github.com/gin-gonic/gin"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+
+	"urlshortener.api/models"
 )
 
 type mongoDB struct {
@@ -13,7 +13,7 @@ type mongoDB struct {
 }
 
 // NewMongoDB creates a new DB backed by a given Mongo server,
-func NewMongoDB(Sess *mgo.Session) dal.DataAccessLayer {
+func NewMongoDB(Sess *mgo.Session) DataAccessLayer {
 	return &mongoDB{Sess}
 }
 

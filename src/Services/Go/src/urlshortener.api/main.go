@@ -5,10 +5,12 @@ import (
 	"os"
 	"time"
 
-	"github.com/sirupsen/logrus"
-	"gopkg.in/mgo.v2"
 	"urlshortener.api/urlshorten/db"
-	httphandler "urlshortener.api/urlshorten/delivery/http"
+
+	"github.com/sirupsen/logrus"
+	mgo "gopkg.in/mgo.v2"
+
+	httpDelivery "urlshortener.api/urlshorten/delivery/http"
 	"urlshortener.api/urlshorten/usecase"
 )
 
@@ -17,10 +19,12 @@ func main() {
 	if h := os.Getenv("DB_HOST"); h != "" {
 		host = h
 	}
+
 	sess, err := mgo.Dial(host + ":" + port)
 	if err != nil {
 		logrus.Panicf("Init DB: %v", err)
 	}
+	defer sess.Close()
 
 	sess.SetMode(mgo.Monotonic, true)
 	c := sess.DB(db.Name).C(db.Collection)
@@ -42,14 +46,13 @@ func main() {
 		logrus.Fatal(err)
 		os.Exit(1)
 	}
-	defer sess.Close()
 
-	DB := db.NewMongoDB(sess)
-	ucs := usecase.NewURLShortenUsecase(DB)
-	handler := httphandler.NewHTTPURLShortenHandler(ucs)
+	datastore := db.NewMongoDB(sess)
+	usecases := usecase.NewUrlService(datastore)
+	urlHandler := httpDelivery.NewUrlHandler(usecases)
 
 	// HTTP Web server
-	router := SetupRouter(handler)
+	router := SetupRouter(urlHandler)
 	srv := &http.Server{
 		Addr:           ":8080",
 		Handler:        router,

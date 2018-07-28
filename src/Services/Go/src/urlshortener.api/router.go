@@ -13,7 +13,7 @@ import (
 )
 
 // SetupRouter returns a framework's instance
-func SetupRouter(h *httphandler.HTTPURLShortenHandler) *gin.Engine {
+func SetupRouter(h *http.UrlHandler) *gin.Engine {
 	router := gin.New()
 
 	switch env := os.Getenv("APP_ENVIRONMENT"); env {

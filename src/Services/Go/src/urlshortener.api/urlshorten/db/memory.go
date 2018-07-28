@@ -1,17 +1,16 @@
 package db
 
 import (
+	"errors"
 	"sync"
 
-	"urlshortener.api/models"
 	"github.com/gin-gonic/gin"
 
-	dal "urlshortener.api/urlshorten"
-	"urlshortener.api/urlshorten/delivery/http"
+	"urlshortener.api/models"
 )
 
 // Ensure MemoryDB conforms to DataAccessLayer interface.
-var _ dal.DataAccessLayer = &MemoryDB{}
+var _ DataAccessLayer = &MemoryDB{}
 
 // MemoryDB is a simple in-memory persistence layer for urlshortens.
 type MemoryDB struct {
@@ -26,13 +25,6 @@ func NewMemoryDB() *MemoryDB {
 	}
 }
 
-// Close empties urlshorten repos
-func (db *MemoryDB) Close() {
-	db.mu.Lock()
-	defer db.mu.Unlock()
-	db.urlshortens = nil
-}
-
 // Fetch retrieves URLShorten resource by its shortURL
 func (db *MemoryDB) Fetch(ctx *gin.Context, shortURL string) (*models.URLShorten, error) {
 	db.mu.Lock()
@@ -40,7 +32,7 @@ func (db *MemoryDB) Fetch(ctx *gin.Context, shortURL string) (*models.URLShorten
 
 	urlsh, ok := db.urlshortens[shortURL]
 	if !ok {
-		return nil, httphandler.ErrNotFound
+		return nil, errors.New("[MemDB]: Not Found")
 	}
 	return urlsh, nil
 }
@@ -52,6 +44,13 @@ func (db *MemoryDB) Store(ctx *gin.Context, urlsh *models.URLShorten) (*models.U
 
 	db.urlshortens[urlsh.ShortURL] = urlsh
 	return urlsh, nil
+}
+
+// Close empties urlshorten repos
+func (db *MemoryDB) Close() {
+	db.mu.Lock()
+	defer db.mu.Unlock()
+	db.urlshortens = nil
 }
 
 // Size returns the length of urlshorten repos

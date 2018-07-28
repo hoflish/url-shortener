@@ -14,13 +14,13 @@ import (
 	"github.com/teris-io/shortid"
 	"gopkg.in/mgo.v2/bson"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 	"urlshortener.api/models"
 	urlsh "urlshortener.api/urlshorten"
 	"urlshortener.api/urlshorten/db"
-	httphandler "urlshortener.api/urlshorten/delivery/http"
+	httpDelivery "urlshortener.api/urlshorten/delivery/http"
 	"urlshortener.api/urlshorten/usecase"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/suite"
 )
 
 type HTTPTestSuite struct {
@@ -56,8 +56,8 @@ func (suite *HTTPTestSuite) FeedMemDB() {
 
 func (suite *HTTPTestSuite) SetupSuite() {
 	suite.memDB = db.NewMemoryDB()
-	usecases := usecase.NewURLShortenUsecase(suite.memDB)
-	handler := httphandler.NewHTTPURLShortenHandler(usecases)
+	usecases := usecase.NewUrlService(suite.memDB)
+	handler := httpDelivery.NewUrlHandler(usecases)
 
 	suite.router = SetupRouter(handler)
 	suite.FeedMemDB()

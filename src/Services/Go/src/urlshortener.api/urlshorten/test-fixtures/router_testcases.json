@@ -1,5 +1,4 @@
-[
-  {
+[{
     "TCID": 0,
     "TestCase": "/api/v1/url",
     "Expected": {
@@ -13,14 +12,6 @@
     "Expected": {
       "message": "Invalid shortUrl: ",
       "status": 422
-    }
-  },
-  {
-    "TCID": 2,
-    "TestCase": "/api/v1/url?shortUrl=http://192.168.99.100:8080/a7E-m19Lk",
-    "Expected": {
-      "message": "Resource not found",
-      "status": 404
     }
   },
   {
