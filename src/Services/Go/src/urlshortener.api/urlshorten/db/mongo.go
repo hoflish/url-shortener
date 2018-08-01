@@ -1,7 +1,10 @@
 package db
 
 import (
+	"os"
+
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
@@ -13,8 +16,24 @@ type mongoDB struct {
 }
 
 // NewMongoDB creates a new DB backed by a given Mongo server,
-func NewMongoDB(Sess *mgo.Session) DataAccessLayer {
-	return &mongoDB{Sess}
+func NewMongoDB(Addr string, options ...func(*mgo.Session)) DataAccessLayer {
+	sess, err := mgo.Dial(Addr)
+	if err != nil {
+		logrus.Panicf("Init DB: %v", err)
+	}
+	defer sess.Close()
+	
+	for _, option := range options {
+		option(sess)
+	}
+
+	err = sess.Ping()
+	if err != nil {
+		logrus.Fatal(err)
+		os.Exit(1)
+	}
+
+	return &mongoDB{Sess: sess}
 }
 
 // Fetch method gets a specified Url Resource
