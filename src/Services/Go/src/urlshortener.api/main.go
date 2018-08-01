@@ -19,35 +19,28 @@ func main() {
 	if h := os.Getenv("DB_HOST"); h != "" {
 		host = h
 	}
+	addr := host + ":" + port
 
-	sess, err := mgo.Dial(host + ":" + port)
-	if err != nil {
-		logrus.Panicf("Init DB: %v", err)
-	}
-	defer sess.Close()
-
-	sess.SetMode(mgo.Monotonic, true)
-	c := sess.DB(db.Name).C(db.Collection)
-
-	index := mgo.Index{
-		Key:        []string{"shorturl"},
-		Unique:     true,
-		DropDups:   true,
-		Background: true,
-		Sparse:     true,
-	}
-	err = c.EnsureIndex(index)
-	if err != nil {
-		logrus.Error(err)
+	mode := func(sess *mgo.Session) {
+		sess.SetMode(mgo.Monotonic, true)
 	}
 
-	err = sess.Ping()
-	if err != nil {
-		logrus.Fatal(err)
-		os.Exit(1)
+	indexing := func(sess *mgo.Session) {
+		c := sess.DB(db.Name).C(db.Collection)
+		index := mgo.Index{
+			Key:        []string{"shorturl"},
+			Unique:     true,
+			DropDups:   true,
+			Background: true,
+			Sparse:     true,
+		}
+		err := c.EnsureIndex(index)
+		if err != nil {
+			logrus.Error(err)
+		}
 	}
 
-	datastore := db.NewMongoDB(sess)
+	datastore := db.NewMongoDB(addr, mode, indexing)
 	usecases := usecase.NewUrlService(datastore)
 	urlHandler := httpDelivery.NewUrlHandler(usecases)
 
