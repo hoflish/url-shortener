@@ -40,7 +40,7 @@ func SetupRouter(h *http.UrlHandler) *gin.Engine {
 	}
 
 	// CORS for SPA Client origin, allowing:
-	// - POST, PUT and PATCH methods
+	// - GET, POST and OPTIONS methods
 	// - Origin header
 	// - Credentials share
 	// - Preflight requests cached for 12 hours

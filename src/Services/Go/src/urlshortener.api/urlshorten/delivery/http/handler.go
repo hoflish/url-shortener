@@ -28,13 +28,13 @@ func NewUrlHandler(s *usecase.UrlService) *UrlHandler {
 func (h *UrlHandler) Get(c *gin.Context) {
 	qValue, ok := c.GetQuery("shortUrl")
 	if !ok {
-		e := NewAPIError(400, CodeMissingParam, errors.New("Missing 'shortUrl' query parameter"))
+		e := NewAPIError(400, CodeMissingParam, "", errors.New("Missing 'shortUrl' query parameter"))
 		c.JSON(e.Status, e)
 		return
 	}
 
 	if !utils.IsRequestURL(qValue) {
-		e := NewAPIError(422, CodeInvalidParam, fmt.Errorf("Invalid shortUrl: %s", qValue))
+		e := NewAPIError(422, CodeInvalidParam, "", fmt.Errorf("Invalid shortUrl: %s", qValue))
 		c.JSON(e.Status, e)
 		return
 	}
@@ -60,8 +60,14 @@ func (h *UrlHandler) Insert(c *gin.Context) {
 	var urlSh models.URLShorten
 
 	err := c.ShouldBindWith(&urlSh, binding.FormPost)
-	if err != nil && !utils.IsRequestURL(urlSh.LongURL) {
-		e := NewAPIError(400, CodeInvalidParam, fmt.Errorf("Invalid longUrl: %s", urlSh.LongURL))
+	if err != nil {
+		e := NewAPIError(400, CodeBadRequest, err.Error(), errors.New("Bad Request"))
+		c.JSON(e.Status, e)
+		return
+	}
+
+	if !utils.IsRequestURL(urlSh.LongURL) {
+		e := NewAPIError(422, CodeInvalidParam, "", fmt.Errorf("Invalid longUrl: %s", urlSh.LongURL))
 		c.JSON(e.Status, e)
 		return
 	}

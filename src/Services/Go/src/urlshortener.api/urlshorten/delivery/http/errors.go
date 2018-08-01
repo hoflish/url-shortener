@@ -8,15 +8,15 @@ import (
 )
 
 type APIError struct {
-	Err     map[string]interface{} `json:"error"`
-	Status  int                    `json:"status"`
-	Message string                 `json:"message"`
+	Err     *Error `json:"error,omitempty"`
+	Status  int    `json:"status,omitempty"`
+	Message string `json:"message,omitempty"`
 }
 
 type Error struct {
-	Code    string `json:"code"`
-	Message string `json:"message"`
-	Details string `json:"details"`
+	Code    string `json:"code,omitempty"`
+	Message string `json:"message,omitempty"`
+	Details string `json:"details,omitempty"`
 }
 
 // Errors
@@ -25,9 +25,8 @@ var (
 	ErrInternal = errors.New("Oops! something went wrong")
 	ErrUnknown  = errors.New("An unexpected error occurred")
 
-	ErrAPINotFound = NewAPIError(404, CodeNotFound, ErrNotFound)
-	ErrAPIInternal = NewAPIError(500, CodeInternalError, ErrInternal)
-	ErrAPIUnknown  = NewAPIError(520, CodeUnknown, ErrUnknown)
+	ErrAPINotFound = NewAPIError(404, CodeNotFound, "", ErrNotFound)
+	ErrAPIInternal = NewAPIError(500, CodeInternalError, "", ErrInternal)
 )
 
 // Error Codes
@@ -35,22 +34,19 @@ const (
 	CodeInvalidParam  = "invalidParameter"
 	CodeInternalError = "internalError"
 	CodeNotFound      = "notFound"
-	CodeUnknown       = "unknownError"
 	CodeMissingParam  = "missingParameter"
+	CodeBadRequest    = "badRequest"
 )
 
-func NewAPIError(status int, code string, err error) *APIError {
-	errs := []*Error{}
+func NewAPIError(status int, code, detail string, err error) *APIError {
 	e := &Error{
 		Code:    code,
 		Message: err.Error(),
-		Details: "",
+		Details: detail,
 	}
-	errs = append(errs, e)
+
 	return &APIError{
-		Err: map[string]interface{}{
-			"errors": errs,
-		},
+		Err:     e,
 		Status:  status,
 		Message: e.Message,
 	}
